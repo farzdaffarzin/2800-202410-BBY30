@@ -1,5 +1,5 @@
 ## About Us
-Team Name: BBY-30 OR DTC-XX
+Team Name: BBY-30
 Team Members: 
 - Robin 
 - Farzad
