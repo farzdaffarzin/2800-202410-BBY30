@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./fetchIngredients.js"></script>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="mainDiv">
+        <fieldset>
+            <input type="text" id="search-item" />
+            <div>
+                <input class="sort" type="radio" id="energy" value="energy" name="sorting" />
+                <label for="energy"><abbr title="i've no idea what this is lol">Energy</abbr></label>
+                
+                <input class="sort" type="radio" id="calories" value="calories" name="sorting" />
+                <label for="popularity">Calories</label>
+            </div>
+            <button type="submit" id="search-button">Search</button>
+        </fieldset>
+    </div>
+    <div id="fridge">
+        <h3>Fridge</h3>
+        <ul id="fridge-contents"></ul>
+    </div>
+    <div id="search-results">
+        <ul id="search-results-list">
+            <!-- empty, fill with ingredients -->
+        </ul>
+    </div>
+</body>
+
+</html>
