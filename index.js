@@ -48,6 +48,8 @@ app.use(session({
 app.use(express.urlencoded({extended: true}));
 
 
+app.use(express.static('public'));
+
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
 
@@ -93,7 +95,7 @@ app.post('/submitUser', async (req, res) => {
     req.session.cookie.maxAge = expireTime; // Set session expiration time
     
     console.log("Inserted user"); // Log user insertion
-    res.redirect("/test"); // Redirect to test page
+    res.redirect("/Home"); // Redirect to Home page
 });
 
 // Route for the login page
@@ -152,17 +154,17 @@ app.get('/loggedin', (req, res) => {
         res.redirect('/login'); // Redirect to login page if not authenticated
         return;
     }
-    res.redirect('/test'); // Redirect to members page if authenticated
+    res.redirect('/Home'); // Redirect to members page if authenticated
 });
 
 
-// Route for the test page
-app.get("/test", (req, res) => {
+// Route for the home page
+app.get("/Home", (req, res) => {
     if (!req.session.authenticated) {
         res.redirect('/'); // Redirect to home page if not authenticated
         return;
     } else {
-        res.render('test', {username: req.session.username}); // Render the test.ejs view if authenticated
+        res.render('landingPage', {username: req.session.username}); // Render the Home.ejs view if authenticated
     }
 });
 
