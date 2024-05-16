@@ -8,7 +8,7 @@ async function fetchRecipes() {
     }
 
     try {
-        const response = await fetch('/recipes', { // Note: No "/api" here
+        const response = await fetch('/recipes', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -23,6 +23,7 @@ async function fetchRecipes() {
     }
 }
 
+// Function to display the fetched recipes as a list
 function displayRecipes(recipes) {
     const recipeList = document.getElementById('recipeList');
     recipeList.innerHTML = ''; // Clear previous results
@@ -42,20 +43,22 @@ function displayRecipes(recipes) {
         recipeList.appendChild(listItem);
     });
 }
+
 async function fetchRecipeDetails(recipeId) {
-    try {
-        const response = await fetch(`/recipes/${recipeId}`, {
-            method: 'GET',
-        }); const recipeDetails = await response.json();
-        displayRecipeDetails(recipeDetails);
-    } catch (error) {
-        console.error("Error fetching recipe details:", error);
-    }
+  try {
+      const response = await fetch(`/recipes/${recipeId}`, {
+          method: 'GET',
+      }); const recipeDetails = await response.json();
+      displayRecipeDetails(recipeDetails);
+  } catch (error) {
+      console.error("Error fetching recipe details:", error);
+  }
 }
 
+// function to display full recipe details
 function displayRecipeDetails(recipe) {
-    const detailsDiv = document.getElementById('recipeDetails');
-    detailsDiv.innerHTML = `
+  const detailsDiv = document.getElementById('recipeDetails');
+  detailsDiv.innerHTML = `
       <h3>${recipe.title}</h3>
       <img src="${recipe.image}" alt="${recipe.title}" width="300">
       <h4>Ingredients:</h4>
@@ -63,7 +66,5 @@ function displayRecipeDetails(recipe) {
       <h4>Instructions:</h4>
       <p>${recipe.instructions}</p>
   `;
-    detailsDiv.style.display = 'block';
+  detailsDiv.style.display = 'block';
 }
-
-
