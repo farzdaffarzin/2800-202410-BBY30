@@ -6,7 +6,7 @@ async function fetchIngredients() {
     };
 
     try {
-        const response = await fetch('/ingredients', { 
+        const response = await fetch('/ingredients', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -17,7 +17,7 @@ async function fetchIngredients() {
         if (!response.ok) {
             throw new Error('Failed to fetch ingredient data');
         }
-        
+
         const ingredients = await response.json();
         displayIngredients(ingredients);
     } catch (err) {
@@ -42,34 +42,43 @@ async function displayIngredients(results) {
 
     // Clear previous ingredient search results
     ingredientList.innerHTML = '';
-    
+
     results.forEach(element => {
-        let foundIngredient = document.createElement('li'); 
+        let foundIngredient = document.createElement('li');
         foundIngredient.innerHTML = `${capitalizeFirstLetter(element.name)}`;
 
         foundIngredient.addEventListener('click', async () => {
             const ingredients = {
                 "id": element.id,
-                "name": element.name
+                "name": element.name,
+                "quantity": 1,
+                "unit": element.unit
             };
 
             try {
-                const response = await fetch('/insertIntoFridge', { 
+                const response = await fetch('/insertIntoFridge', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ingredients}),
+                    body: JSON.stringify({ ingredients }),
                 });
-        
+
                 if (!response.ok) {
                     throw new Error('Failed to insert item into fridge');
                 }
-                const existsData = await response.json();
-                if (existsData.exists && existsData.exists === true) {
-                    // Display message saying the item is already in the user's fridge here
-                    alert("That item is already in your fridge!");
-                    return;
+                const existsId = await response.json();
+                console.log(existsId);
+                if (existsId) {
+                    const listItem = document.getElementById(existsId.exists);
+                    console.log(listItem);
+                    if (listItem) {
+                        const currentText = listItem.textContent;
+                        const regex = /(\d+)/; 
+                        const currentQuantity = parseInt(currentText.match(regex)[0]); 
+                        const newQuantity = currentQuantity + 1; 
+                        listItem.textContent = currentText.replace(regex, newQuantity);
+                    }
                 } else {
                     let item = createFridgeItem(ingredients);
                     var emptyMessage = document.getElementById('empty-message')
@@ -78,10 +87,9 @@ async function displayIngredients(results) {
                     }
                     fridgeDisplay.appendChild(item);
                 }
-                
             } catch (err) {
                 console.error("Error updating fridge:", err);
-            }            
+            }
         });
         ingredientList.appendChild(foundIngredient);
     })
@@ -89,6 +97,7 @@ async function displayIngredients(results) {
 
 function createFridgeItem(item) {
     let itemToAdd = document.createElement('li');
-    itemToAdd.innerHTML = `${capitalizeFirstLetter(item.name)}`;
+    itemToAdd.innerHTML = `${capitalizeFirstLetter(item.name)}, ${item.quantity}`;
+    itemToAdd.id = item.id;
     return itemToAdd;
 }
