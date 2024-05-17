@@ -1,4 +1,4 @@
-<%- include('./templates/header') %>
+<%- include('./templates/header-boostrapOnly') %>
     <!-- Login page content -->
     <h1>Login Page</h1>
     <form action='/loggingin' method='post'>
@@ -97,8 +97,8 @@
                     <input type="password" id="password" class="fadeIn third" name="password" placeholder="password">
                     <button class="btn btn-primary">Submit</button>
                         <!-- Forgot password link -->
-                    
-                </form>
+                        <a href="/forgot-password" class="forgot-password-link">Forgot Password?</a>
+                    </form>
             </div>
         </div>
         

@@ -6,6 +6,9 @@ const session = require('express-session'); // Session middleware
 const MongoStore = require('connect-mongo'); // MongoDB session store
 const bcrypt = require('bcrypt'); // Password hashing
 const Joi = require('joi'); // Input validation
+const crypto = require('crypto'); // Random token generation
+const nodemailer = require('nodemailer');// Email sending
+
 const saltRounds = 12; // Number of rounds for bcrypt hashing
 
 const app = express(); // Create an instance of Express
@@ -142,6 +145,82 @@ app.post('/loggingin', async (req, res) => {
         return;
     }
 });
+
+// Create a transporter for nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'farzadf8713@gmail.com',
+        pass: 'dkwrnvgfwghskxnu'
+    }
+});
+
+function createResetToken() {
+    return crypto.randomBytes(20).toString('hex');
+}
+
+async function sendResetEmail(email, link) {
+    const mailOptions = {
+        from: 'pantry.pal2024@gmail.com',
+        to: email,
+        subject: 'Password Reset',
+        text: `You requested for a password reset. Click the following link to reset your password: ${link}`
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Reset password email sent.');
+    } catch (error) {
+        console.error('Error sending reset email:', error);
+    }
+}
+
+app.get('/forgot-password', (req, res) => {
+    res.render('forgot-password');
+});
+
+// Route to handle sending the password reset email
+app.post('/send-password-reset', async (req, res) => {
+    const { email } = req.body;
+    const user = await userCollection.findOne({ email: email });
+    if (!user) {
+        res.status(400).send('No account with that email address exists.');
+    } else {
+        const resetToken = createResetToken();
+        const resetLink = `http://${req.headers.host}/reset-password?token=${resetToken}`;
+        await sendResetEmail(email, resetLink);
+
+        // Store the token in the database with an expiry
+        const expireTime = new Date(Date.now() + 3600000); // 1 hour from now
+        await userCollection.updateOne({ email: email }, { $set: { resetToken: resetToken, resetTokenExpires: expireTime } });
+
+        res.send({ message: 'A password reset link has been sent to your email.' });
+    }
+});
+
+
+// Route to serve the Reset Password form
+app.get('/reset-password', (req, res) => {
+    res.render('reset-password', { token: req.query.token });
+});
+
+// Route to handle the password reset form submission
+app.post('/reset-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+    const user = await userCollection.findOne({
+        resetToken: token,
+        resetTokenExpires: { $gt: new Date() } // Checks if the token is not expired
+    });
+
+    if (!user) {
+        return res.status(400).send('Invalid or expired token.');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+    await userCollection.updateOne({ _id: user._id }, { $set: { password: hashedPassword, resetToken: null, resetTokenExpires: null } });
+    res.send('Your password has been updated. <a href="/login">back to Login</a>');
+});
+
 
 // Route for invalid password page
 app.get('/invalidPassword', (req, res) => {
