@@ -134,9 +134,7 @@ app.get("/fridge", async (req, res) => {
 // Route for fetching user fridge data
 app.post('/getUserFridge', async (req, res) => {
     try {
-        // Username for testing
-        // In actual use you'd get req.session.username and use it here
-        const username = "fridgeTester";
+        const username = req.session.username;
 
         // Find user's fridge data from MongoDB
         const userFridgeData = await userCollection.findOne(
@@ -160,8 +158,6 @@ app.post('/getUserFridge', async (req, res) => {
 // Route for inserting an item into the user's fridge
 app.post('/insertIntoFridge', async (req, res) => {
     try {
-        // Username for testing
-        // In actual use you'd get req.session.username and use it here
         const username = req.session.username;
 
         const userFridge = await userCollection.findOne({ username: username });
