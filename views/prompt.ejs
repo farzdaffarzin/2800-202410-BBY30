@@ -2,7 +2,9 @@
 <html>
 <head>
     <title>Recipe Prompt</title>
-    <script src="recipeDisplay.js"></script>  </head>
+    <script src="recipeDisplay.js"></script> 
+    <%- include('templates/header') %> 
+</head>
 <body>
     <h2>Recipe Prompt</h2>
 
@@ -25,6 +27,6 @@
 
     <ul id="recipeList"></ul>
     <div id="recipeDetails"></div> 
-
+    <%- include('templates/footer') %>
 </body>
 </html>
