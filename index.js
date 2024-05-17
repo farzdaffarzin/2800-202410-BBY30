@@ -10,6 +10,8 @@ const bcrypt = require('bcrypt'); // Password hashing
 const Joi = require('joi'); // Input validation
 const crypto = require('crypto'); // Random token generation
 const nodemailer = require('nodemailer');// Email sending
+const favicon = require('serve-favicon');//for favicon
+
 
 const { getRecipesByIngredients } = require('./recipeGen'); // Import functions
 const { ingredientSearch } = require('./ingredientApiSearch.js');
