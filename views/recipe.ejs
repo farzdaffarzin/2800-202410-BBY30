@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= recipe.title %></title>
+    <style>
+        /* Basic Styling (Customize as needed) */
+        body { font-family: sans-serif; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <h1><%= recipe.title %></h1>
+    <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
+
+    <h2>Ingredients:</h2>
+    <ul>
+        <% recipe.extendedIngredients.forEach(ing => { %>
+            <li><%= ing.original %></li>
+        <% }); %>
+    </ul>
+
+    <h2>Instructions:</h2>
+    <div><%- recipe.instructions %></div> 
+</body>
+</html>
