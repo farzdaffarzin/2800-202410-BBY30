@@ -1,13 +1,18 @@
 // Require necessary modules
 require("./utils.js");
 const express = require('express');
-require('dotenv').config(); // Load environment variables from a .env file
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') }); // Load environment variables from a .env file
+const axios = require('axios');
 const session = require('express-session'); // Session middleware
 const MongoStore = require('connect-mongo'); // MongoDB session store
 const bcrypt = require('bcrypt'); // Password hashing
 const Joi = require('joi'); // Input validation
 const crypto = require('crypto'); // Random token generation
 const nodemailer = require('nodemailer');// Email sending
+
+const { getRecipesByIngredients } = require('./recipeGen'); // Import functions
+//dotenv.config({ path: path.join(__dirname, '.env') });
 
 const saltRounds = 12; // Number of rounds for bcrypt hashing
 
@@ -21,6 +26,7 @@ const mongodb_password = process.env.MONGODB_PASSWORD;
 const mongodb_database = process.env.MONGODB_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const node_session_secret = process.env.NODE_SESSION_SECRET;
+const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 /* END secret section */
 
 // Include database connection (assuming `include` is defined in utils.js)
@@ -55,10 +61,67 @@ app.use(express.static('public'));
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 
 // Route for the home page
 app.get("/", (req, res) => {
     res.render('index'); // Render the index.ejs view
+});
+
+app.get('/prompt', (req,res) => {
+    const fridgeData = [
+        { name: 'chicken', quantity: 2, unit: 'breasts' },
+        { name: 'broccoli', quantity: 1, unit: 'head' },
+        { name: 'rice', quantity: 1, unit: 'cup' },
+        // ... more ingredients
+    ];
+    res.render('prompt', {fridgeData});
+})
+
+// Route to fetch recipe details by ID
+app.get('/recipes/:id', async (req, res) => {
+    try {
+        const recipeId = req.params.id;
+        const response = await axios.get(
+            `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}&includeNutrition=false`
+        );
+        const recipeDetails = response.data;
+
+        // Extract only necessary details (you can customize this)
+        // const simplifiedDetails = {
+        //     title: recipeDetails.title,
+        //     image: recipeDetails.image,
+        //     extendedIngredients: recipeDetails.extendedIngredients,
+        //     instructions: recipeDetails.instructions,
+        // };
+
+        res.render('recipe', { recipe: recipeDetails }); 
+    } catch (error) {
+        console.error("Error fetching recipe details:", error);
+        res.status(500).json({ error: 'Failed to fetch recipe details' });
+    }
+});
+
+// Route to handle recipe search by ingredients
+app.post('/recipes', async (req, res) => {
+    try {
+        const ingredients = req.body.ingredients || ['chicken', 'broccoli', 'rice']; // Default ingredients if none provided
+
+        const recipes = await getRecipesByIngredients(ingredients); // Pass axios instance
+        // (Optional) Store recipes in MongoDB if needed...
+
+        res.json(recipes);
+    } catch (error) {
+        // Error handling for different cases:
+        if (error.response && error.response.status === 404) {
+            res.status(404).json({ error: 'No recipes found for the given ingredients' });
+        } else if (error.response) { // Spoonacular API error
+            res.status(error.response.status).json({ error: error.response.data });
+        } else { // Other errors (e.g., network issues)
+            res.status(500).json({ error: 'Failed to fetch recipes' });
+        }
+    }
 });
 
 // Route for the signup page

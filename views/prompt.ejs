@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recipe Prompt</title>
+    <script src="recipeDisplay.js"></script>  </head>
+<body>
+    <h2>Recipe Prompt</h2>
+
+    <h3>Ingredients in your Fridge:</h3>
+    <ul id="fridgeList">
+        <% fridgeData.forEach(item => { %>
+            <li>
+                <input type="checkbox" id="<%= item.name %>" name="<%= item.name %>" value="<%= item.name %>">
+                <label for="<%= item.name %>"><%= item.name %> (<%= item.quantity %> <%= item.unit %>)</label>
+            </li>
+        <% }); %>
+    </ul>
+
+    <h3>Add Missing Ingredients:</h3>
+    <input type="text" id="addIngredient">
+    <button onclick="addIngredient()">Add</button>
+    <ul id="addedIngredients"></ul> 
+
+    <button onclick="generateRecipes()">Generate Recipes</button>
+
+    <ul id="recipeList"></ul>
+    <div id="recipeDetails"></div> 
+
+</body>
+</html>
