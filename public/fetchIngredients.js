@@ -1,30 +1,28 @@
-const spoonacular_key = 'd2f9861e57d94faaac601530b94f8853';
-async function ingredientSearch(ingredientName, userSortSelection) {
-    var query = ingredientName; 
-    var sortOption = "alphabetical";
+async function fetchIngredients() {
+    const searchInput = document.getElementById('search-item').value;
 
-    // for some reason certain sorting options don't work, afaik, only calories and energy work
-    if (!(userSortSelection === "calories") || !(userSortSelection === "energy")) {
-        sortOption = "calories";
-    }
-    var number = 999;
-    const requestUrl = `https://api.spoonacular.com/food/ingredients/search?apiKey=${spoonacular_key}&query=${query}&number=${number}&sort=${sortOption}&sortDirection=desc`;
+    const formattedSearch = {
+        ingredient: searchInput
+    };
+
     try {
-        const results = await axios.get(requestUrl);
-        // if (!(userSortSelection === "calories") || !(userSortSelection === "energy")) {
-        //     if (userSortSelection === "alphabetical") {
+        const response = await fetch('/ingredients', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formattedSearch),
+        });
 
-        //     }
-        // }
-        return results.data.results;
+        if (!response.ok) {
+            throw new Error('Failed to fetch ingredient data');
+        }
+        
+        const ingredients = await response.json();
+        displayIngredients(ingredients);
     } catch (err) {
-        var searchDiv = document.getElementById("search-results");
-        var errorMessage = document.createElement("span")
-        errorMessage.innerHTML = "Could not connect to Spoonacular";
-        searchDiv.appendChild(errorMessage);
-        return null;
+        console.error("Error fetching ingredients:", err);
     }
-    // write sorting
 }
 
 function getSortingSelection(sorting) {
@@ -36,4 +34,45 @@ function getSortingSelection(sorting) {
         }
     }
     return sortSelection;
+}
+
+async function displayIngredients(results) {
+    const ingredientList = document.getElementById('search-results-list');
+    const fridgeDisplay = document.getElementById('fridge-contents');
+    results.forEach(element => {
+        let foundIngredient = document.createElement('li'); 
+        foundIngredient.innerHTML = `${element.name}, ${element.id}`;
+        foundIngredient.addEventListener('click', async () => {
+            const ingredientObject = {
+                "id": element.id,
+                "name": element.name
+            };
+
+            try {
+                const response = await fetch('/insertIntoFridge', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ingredientObject}),
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Failed to insert item into fridge');
+                }
+            } catch (err) {
+                console.error("Error updating fridge:", err);
+            }
+
+            let item = createFridgeItem(ingredientObject);
+            fridgeDisplay.appendChild(item);
+        });
+        ingredientList.appendChild(foundIngredient);
+    })
+}
+
+function createFridgeItem(item) {
+    let itemToAdd = document.createElement('li');
+    itemToAdd.innerHTML = `${item.name}, ${item.id}`;
+    return itemToAdd;
 }

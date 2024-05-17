@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="./fetchIngredients.js"></script>
-
     <title>Document</title>
 </head>
 
@@ -14,14 +12,7 @@
     <div id="mainDiv">
         <fieldset>
             <input type="text" id="search-item" />
-            <div>
-                <input class="sort" type="radio" id="energy" value="energy" name="sorting" />
-                <label for="energy"><abbr title="i've no idea what this is lol">Energy</abbr></label>
-
-                <input class="sort" type="radio" id="calories" value="calories" name="sorting" />
-                <label for="popularity">Calories</label>
-            </div>
-            <button type="submit" id="search-button">Search</button>
+            <button type="submit" onclick="fetchIngredients()" id="search-button">Search</button>
         </fieldset>
     </div>
     <div id="fridge">
@@ -29,71 +20,13 @@
         <ul id="fridge-contents"></ul>
     </div>
     <div id="search-results">
+        <h3>Search Results</h3>
         <ul id="search-results-list">
             <!-- empty, fill with ingredients -->
         </ul>
     </div>
-</body>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('search-button').addEventListener('click', async () => {
-            // temp database
-            var fridge = { 
-                "userID": 1,
-                "food": [
-                    {
-                        "name": "example",
-                        "id": 1
-                    }
-                ]
-            };
-            var fridgeList = document.getElementById("fridge-contents");
-            console.log(fridge);
-            var sorting = document.getElementsByClassName("sort");
-
-            var sortSelection = getSortingSelection(sorting);
-
-            var ingredientToLookUp = document.getElementById('search-item');
-            if (!ingredientToLookUp) {
-                console.log('cannot find input field');
-                return;
-            } else if (!ingredientToLookUp.value) {
-                console.log('input field empty');
-                return;
-            }
-            const results = await ingredientSearch(ingredientToLookUp.value, sortSelection);
-            if (!results) {
-
-                return;
-            }
-            if (results.length < 1) {
-                console.log(`'${ingredientToLookUp.value}' could not be found.`);
-            }
-
-            var list = document.getElementById("search-results-list");
-
-            results.forEach(element => {
-                var item = document.createElement("li");
-                item.innerHTML += element.name + ", " + element.id;
-                item.classList.add("ingredient");
-                item.setAttribute('data-id', element.id);
-                item.setAttribute('data-name', element.name);
-                item.onmousedown = () => {
-                    let itemToAdd = {
-                        "id": item.getAttribute('data-id'),
-                        "name": item.getAttribute('data-name')
-                    }
-                    fridge.food.push(itemToAdd);
-                    let fridgeItem = document.createElement("li");
-                    fridgeItem.innerHTML = itemToAdd.id + ", " + itemToAdd.name;
-                    fridgeList.appendChild(fridgeItem);
-                };
-
-                list.appendChild(item);
-            });
-        });
-    });
-</script>
+    <script src="./fetchIngredients.js"></script>
+    <script src="./fetchFridgeData.js"></script>
 
 <%- include('./templates/footer') %>
