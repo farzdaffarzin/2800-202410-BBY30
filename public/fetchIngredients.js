@@ -48,7 +48,7 @@ async function displayIngredients(results) {
         foundIngredient.innerHTML = `${capitalizeFirstLetter(element.name)}`;
 
         foundIngredient.addEventListener('click', async () => {
-            const ingredientObject = {
+            const ingredients = {
                 "id": element.id,
                 "name": element.name
             };
@@ -59,7 +59,7 @@ async function displayIngredients(results) {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ingredientObject}),
+                    body: JSON.stringify({ingredients}),
                 });
         
                 if (!response.ok) {
@@ -71,7 +71,7 @@ async function displayIngredients(results) {
                     alert("That item is already in your fridge!");
                     return;
                 } else {
-                    let item = createFridgeItem(ingredientObject);
+                    let item = createFridgeItem(ingredients);
                     var emptyMessage = document.getElementById('empty-message')
                     if (emptyMessage) {
                         emptyMessage.remove();

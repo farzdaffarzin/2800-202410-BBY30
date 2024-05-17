@@ -159,17 +159,30 @@ app.post('/getUserFridge', async (req, res) => {
 app.post('/insertIntoFridge', async (req, res) => {
     try {
         const username = req.session.username;
-
         const userFridge = await userCollection.findOne({ username: username });
-        if (userFridge && userFridge.fridge.some(ingredient => ingredient.id === req.body.ingredientObject.id)) {
-            res.json({ exists: true });
-            return;
+
+        // Check if the ingredients are provided and if it's an array
+        let foodToInsert = req.body.ingredients;
+        if (!foodToInsert) {
+            return res.status(400).json({ error: 'Ingredients must be provided' });
         }
 
-        // Finds and inserts ingredient into user's fridge
+        if (!Array.isArray(foodToInsert)) {
+            // Convert single object to array
+            foodToInsert = [foodToInsert]; 
+        }
+
+        // Check if any of the ingredients already exist in the fridge
+        for (const ingredient of foodToInsert) {
+            if (userFridge && userFridge.fridge.some(item => item.id === ingredient.id)) {
+                return res.json({ exists: true });
+            }
+        }
+
+        // Update the user's fridge with the new ingredients
         const result = await userCollection.updateOne(
             { username: username },
-            { $push: { fridge: req.body.ingredientObject } } 
+            { $push: { fridge: { $each: foodToInsert } } }
         );
 
         if (!result) {
@@ -183,6 +196,7 @@ app.post('/insertIntoFridge', async (req, res) => {
         res.status(500).json({ error: 'Failed to update fridge data' });
     }
 });
+
 
 // Route for ingredient search
 app.post('/ingredients', async (req, res) => {
