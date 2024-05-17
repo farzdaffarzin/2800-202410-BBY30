@@ -33,14 +33,21 @@
             border-radius: 5px;
         }
 
-        #search-button {
-            width: 40px;
+        #search-button, #load-preset-button {
             padding: 8px;
             border: none;
             border-radius: 5px;
             background-color: #007bff;
             color: #fff;
             cursor: pointer;
+        }
+        
+        #search-button {
+            width: 40px;
+        }
+
+        #load-preset-button {
+            width: 175px;
         }
 
         #fridge-contents,
@@ -75,12 +82,12 @@
     <div class="container">
         <div id="mainDiv">
             <input type="text" id="search-item" placeholder="Search item..." />
-            <button type="submit" onclick="fetchIngredients()" id="search-button">
+            <button onclick="fetchIngredients()" id="search-button">
                 <ion-icon name="search-outline"></ion-icon>
             </button>
         </div>
         <div id="fridge">
-            <h3>Fridge</h3>
+            <h3>Fridge</h3><button onclick="loadPresetFridge()" id="load-preset-button">Load Preset Fridge</button>
             <ul id="fridge-contents"></ul>
         </div>
         <div id="search-results">
