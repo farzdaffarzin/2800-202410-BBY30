@@ -20,6 +20,48 @@ async function fetchFridge() {
     }
 }
 
+async function storePresetInFridge(data) {
+    var dataToStore = {
+        ingredients: data
+    }
+    try {
+        const fridgeResponse = await fetch('/insertIntoFridge', {
+            method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToStore)
+        });
+        if (!fridgeResponse.ok) {
+            throw new Error('Failed to insert item into fridge');
+        }
+    } catch (err) {
+        console.error("Error updating fridge:", err);
+    }
+}
+
+async function loadPresetFridge() {
+    try {
+        const response = await fetch('fridgePreset.json');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+
+        const fridgeList = document.getElementById('fridge-contents');
+        fridgeList.innerHTML = '';
+        data.forEach(element => {
+            let fridgeItem = document.createElement('li');
+            fridgeItem.textContent = `${capitalizeFirstLetter(element.name)}`;
+            fridgeList.appendChild(fridgeItem);
+        });
+        storePresetInFridge(data);
+
+      } catch (err) {
+        console.error('There was a problem fetching fridgePreset.json:', err);
+      }
+}
+
 async function displayFridgeContents() {
     try {
         const user = await fetchFridge();
