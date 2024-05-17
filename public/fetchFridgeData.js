@@ -27,7 +27,6 @@ async function displayFridgeContents() {
         const fridgeList = document.getElementById('fridge-contents');
         // Displays message if user's fridge is empty
         if (results.length < 1) {
-            console.log("aaa");
             fridgeList.innerHTML = '';
             let fridgeItem = document.createElement('li');
             fridgeItem.id = 'empty-message';

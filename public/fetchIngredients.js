@@ -71,7 +71,6 @@ async function displayIngredients(results) {
                     alert("That item is already in your fridge!");
                     return;
                 } else {
-                    console.log('aaa');
                     let item = createFridgeItem(ingredientObject);
                     var emptyMessage = document.getElementById('empty-message')
                     if (emptyMessage) {

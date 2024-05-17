@@ -12,6 +12,7 @@ const crypto = require('crypto'); // Random token generation
 const nodemailer = require('nodemailer');// Email sending
 
 const { getRecipesByIngredients } = require('./recipeGen'); // Import functions
+const { ingredientSearch } = require('./ingredientApiSearch.js');
 //dotenv.config({ path: path.join(__dirname, '.env') });
 
 const saltRounds = 12; // Number of rounds for bcrypt hashing
@@ -58,6 +59,7 @@ app.use(express.urlencoded({extended: true}));
 
 
 app.use(express.static('public'));
+app.use(express.json());
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -121,6 +123,97 @@ app.post('/recipes', async (req, res) => {
         } else { // Other errors (e.g., network issues)
             res.status(500).json({ error: 'Failed to fetch recipes' });
         }
+    }
+});
+
+// Route for home page
+app.get("/fridge", async (req, res) => {
+    res.render('fridge'); // Render fridge page
+});
+
+// Route for fetching user fridge data
+app.post('/getUserFridge', async (req, res) => {
+    try {
+        // Username for testing
+        // In actual use you'd get req.session.username and use it here
+        const username = "fridgeTester";
+
+        // Find user's fridge data from MongoDB
+        const userFridgeData = await userCollection.findOne(
+            { username: username },
+            { projection: { _id: 0, username: 0, password: 0} } // Exclude username and password from projection
+        );
+
+        if (!userFridgeData) {
+            return res.status(404).json({ error: 'User fridge data not found' });
+        }
+
+        // Return user data; only the fridge
+        res.json(userFridgeData);
+    } catch (error) {
+        // Handle error if fetching fridge data fails
+        console.error('Error fetching fridge data:', error);
+        res.status(500).json({ error: 'Failed to fetch fridge data' });
+    }
+});
+
+// Route for inserting an item into the user's fridge
+app.post('/insertIntoFridge', async (req, res) => {
+    try {
+        // Username for testing
+        // In actual use you'd get req.session.username and use it here
+        const username = req.session.username;
+
+        const userFridge = await userCollection.findOne({ username: username });
+        if (userFridge && userFridge.fridge.some(ingredient => ingredient.id === req.body.ingredientObject.id)) {
+            res.json({ exists: true });
+            return;
+        }
+
+        // Finds and inserts ingredient into user's fridge
+        const result = await userCollection.updateOne(
+            { username: username },
+            { $push: { fridge: req.body.ingredientObject } } 
+        );
+
+        if (!result) {
+            return res.status(404).json({ error: 'User fridge data not found' });
+        }
+
+        res.json(result);
+    } catch (err) {
+        // Handle error if fetching fridge data fails
+        console.error('Error updating fridge data:', err);
+        res.status(500).json({ error: 'Failed to update fridge data' });
+    }
+});
+
+// Route for ingredient search
+app.post('/ingredients', async (req, res) => {
+    try {
+        // Extract ingredient to search from request body
+        const ingredientToSearch = req.body.ingredient;
+        if (!ingredientToSearch) {
+            // Return error response if ingredient is not provided
+            res.status(400).json({ error: 'Ingredient not provided in the request' });
+            return;
+        }
+
+        // Search for ingredients using Spoonacular API
+        const results = await ingredientSearch(ingredientToSearch, "calories");
+        res.json(results); // Return search results
+    } catch (err) {
+        // Handle errors if ingredient search fails
+        if (err.response && err.response.status === 404) {
+            res.status(404).json({ error: 'No ingredients found' });
+            return;
+        } 
+
+        if (err.response) {
+            res.status(err.response.status).json({ error: err.response.data });
+            return;
+        } 
+        res.status(500).json({ error: 'Failed to fetch ingredients' });
     }
 });
 
