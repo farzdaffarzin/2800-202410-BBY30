@@ -55,7 +55,7 @@ app.use(session({
     resave: true // Resave session even if not modified
 }));
 // parse
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 
 app.use(express.static('public'));
@@ -71,14 +71,24 @@ app.get("/", (req, res) => {
     res.render('index'); // Render the index.ejs view
 });
 
-app.get('/prompt', (req,res) => {
-    const fridgeData = [
-        { name: 'chicken', quantity: 2, unit: 'breasts' },
-        { name: 'broccoli', quantity: 1, unit: 'head' },
-        { name: 'rice', quantity: 1, unit: 'cup' },
-        // ... more ingredients
-    ];
-    res.render('prompt', {fridgeData});
+app.get('/prompt', async (req, res) => {
+    // const fridgeData = [
+    //     { name: 'chicken', quantity: 2, unit: 'breasts' },
+    //     { name: 'broccoli', quantity: 1, unit: 'head' },
+    //     { name: 'rice', quantity: 1, unit: 'cup' },
+    //     // ... more ingredients
+    // ];
+    const username = req.session.username;
+
+    const user = await userCollection.findOne(
+        { username: username },
+        { projection: { _id: 0, username: 0, password: 0, email: 0 } } 
+    );
+    const fridgeData = user.fridge;
+    if (!fridgeData) {
+        return res.status(404).json({ error: 'User fridge data not found' });
+    }
+    res.render('prompt', { fridgeData });
 })
 
 // Route to fetch recipe details by ID
@@ -98,7 +108,7 @@ app.get('/recipes/:id', async (req, res) => {
         //     instructions: recipeDetails.instructions,
         // };
 
-        res.render('recipe', { recipe: recipeDetails }); 
+        res.render('recipe', { recipe: recipeDetails });
     } catch (error) {
         console.error("Error fetching recipe details:", error);
         res.status(500).json({ error: 'Failed to fetch recipe details' });
@@ -139,7 +149,7 @@ app.post('/getUserFridge', async (req, res) => {
         // Find user's fridge data from MongoDB
         const userFridgeData = await userCollection.findOne(
             { username: username },
-            { projection: { _id: 0, username: 0, password: 0} } // Exclude username and password from projection
+            { projection: { _id: 0, username: 0, password: 0 } } // Exclude username and password from projection
         );
 
         if (!userFridgeData) {
@@ -169,13 +179,19 @@ app.post('/insertIntoFridge', async (req, res) => {
 
         if (!Array.isArray(foodToInsert)) {
             // Convert single object to array
-            foodToInsert = [foodToInsert]; 
+            foodToInsert = [foodToInsert];
         }
 
         // Check if any of the ingredients already exist in the fridge
         for (const ingredient of foodToInsert) {
-            if (userFridge && userFridge.fridge.some(item => item.id === ingredient.id)) {
-                return res.json({ exists: true });
+            const existingItem = await userCollection.findOne({ username: username, 'fridge.id': ingredient.id });
+            if (existingItem) {
+                // If the item already exists, increase its quantity
+                await userCollection.updateOne(
+                    { username: username, 'fridge.id': ingredient.id },
+                    { $inc: { 'fridge.$.quantity': 1 } }
+                );
+                return res.json({ exists: ingredient.id });
             }
         }
 
@@ -217,12 +233,12 @@ app.post('/ingredients', async (req, res) => {
         if (err.response && err.response.status === 404) {
             res.status(404).json({ error: 'No ingredients found' });
             return;
-        } 
+        }
 
         if (err.response) {
             res.status(err.response.status).json({ error: err.response.data });
             return;
-        } 
+        }
         res.status(500).json({ error: 'Failed to fetch ingredients' });
     }
 });
@@ -257,12 +273,12 @@ app.post('/submitUser', async (req, res) => {
 
     // Insert the new user into the database
     await userCollection.insertOne({ username: username, password: hashedPassword, email: email, fridge: [] });
-    
+
     // Set session variables
     req.session.authenticated = true;
     req.session.username = username;
     req.session.cookie.maxAge = expireTime; // Set session expiration time
-    
+
     console.log("Inserted user"); // Log user insertion
     res.redirect("/Home"); // Redirect to Home page
 });
@@ -409,7 +425,7 @@ app.get("/Home", (req, res) => {
         res.redirect('/'); // Redirect to home page if not authenticated
         return;
     } else {
-        res.render('landingPage', {username: req.session.username}); // Render the Home.ejs view if authenticated
+        res.render('landingPage', { username: req.session.username }); // Render the Home.ejs view if authenticated
     }
 });
 

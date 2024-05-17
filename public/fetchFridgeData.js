@@ -81,7 +81,8 @@ async function displayFridgeContents() {
         fridgeList.innerHTML = '';
         results.forEach(element => {
             let fridgeItem = document.createElement('li');
-            fridgeItem.textContent = `${capitalizeFirstLetter(element.name)}`;
+            fridgeItem.textContent = `${capitalizeFirstLetter(element.name)}, ${element.quantity}`;
+            fridgeItem.id = element.id;
             fridgeList.appendChild(fridgeItem);
         });
     } catch (error) {
