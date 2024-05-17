@@ -1,42 +1,52 @@
 [
     {
         "id": 9003,
-        "name": "Apple"
+        "name": "apple",
+        "quantity": 1
     },
     {
         "id": 11215,
-        "name": "Banana"
+        "name": "banana",
+        "quantity": 1
     },
     {
         "id": 11233,
-        "name": "Carrot"
+        "name": "carrot",
+        "quantity": 1
     },
     {
         "id": 11209,
-        "name": "Avocado"
+        "name": "avocado",
+        "quantity": 1
     },
     {
         "id": 9037,
-        "name": "Cucumber"
+        "name": "cucumber",
+        "quantity": 1
     },
     {
         "id": 1001,
-        "name": "Butter"
+        "name": "butter",
+        "quantity": 1
     },
     {
         "id": 20081,
-        "name": "Egg"
+        "name": "egg",
+        "quantity": 1
     },
     {
         "id": 2004,
-        "name": "Flour"
+        "name": "flour",
+        "quantity": 1
     },
     {
         "id": 11282,
-        "name": "Lemon"
+        "name": "lemon",
+        "quantity": 1
     },
     {
         "id": 11216,
-        "name": "Orange"
+        "name": "orange",
+        "quantity": 1
     }
 ]
