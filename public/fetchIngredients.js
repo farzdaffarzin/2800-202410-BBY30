@@ -68,8 +68,8 @@ async function displayIngredients(results) {
                     throw new Error('Failed to insert item into fridge');
                 }
                 const existsId = await response.json();
-                console.log(existsId);
-                if (existsId) {
+                console.log(existsId.exists);
+                if (existsId.exists) {
                     const listItem = document.getElementById(existsId.exists);
                     console.log(listItem);
                     if (listItem) {
