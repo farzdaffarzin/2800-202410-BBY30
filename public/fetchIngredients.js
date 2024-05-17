@@ -39,9 +39,14 @@ function getSortingSelection(sorting) {
 async function displayIngredients(results) {
     const ingredientList = document.getElementById('search-results-list');
     const fridgeDisplay = document.getElementById('fridge-contents');
+
+    // Clear previous ingredient search results
+    ingredientList.innerHTML = '';
+    
     results.forEach(element => {
         let foundIngredient = document.createElement('li'); 
-        foundIngredient.innerHTML = `${element.name}, ${element.id}`;
+        foundIngredient.innerHTML = `${capitalizeFirstLetter(element.name)}`;
+
         foundIngredient.addEventListener('click', async () => {
             const ingredientObject = {
                 "id": element.id,
@@ -60,12 +65,24 @@ async function displayIngredients(results) {
                 if (!response.ok) {
                     throw new Error('Failed to insert item into fridge');
                 }
+                const existsData = await response.json();
+                if (existsData.exists && existsData.exists === true) {
+                    // Display message saying the item is already in the user's fridge here
+                    alert("That item is already in your fridge!");
+                    return;
+                } else {
+                    console.log('aaa');
+                    let item = createFridgeItem(ingredientObject);
+                    var emptyMessage = document.getElementById('empty-message')
+                    if (emptyMessage) {
+                        emptyMessage.remove();
+                    }
+                    fridgeDisplay.appendChild(item);
+                }
+                
             } catch (err) {
                 console.error("Error updating fridge:", err);
-            }
-
-            let item = createFridgeItem(ingredientObject);
-            fridgeDisplay.appendChild(item);
+            }            
         });
         ingredientList.appendChild(foundIngredient);
     })
@@ -73,6 +90,6 @@ async function displayIngredients(results) {
 
 function createFridgeItem(item) {
     let itemToAdd = document.createElement('li');
-    itemToAdd.innerHTML = `${item.name}, ${item.id}`;
+    itemToAdd.innerHTML = `${capitalizeFirstLetter(item.name)}`;
     return itemToAdd;
 }

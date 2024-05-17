@@ -78,7 +78,7 @@ app.post('/getUserFridge', async (req, res) => {
     try {
         // Username for testing
         // In actual use you'd get req.session.username and use it here
-        const username = "razielTest";
+        const username = "fridgeTester";
 
         // Find user's fridge data from MongoDB
         const userFridgeData = await userCollection.findOne(
@@ -104,7 +104,13 @@ app.post('/insertIntoFridge', async (req, res) => {
     try {
         // Username for testing
         // In actual use you'd get req.session.username and use it here
-        const username = "razielTest";
+        const username = "fridgeTester";
+
+        const userFridge = await userCollection.findOne({ username: username });
+        if (userFridge && userFridge.fridge.some(ingredient => ingredient.id === req.body.ingredientObject.id)) {
+            res.json({ exists: true });
+            return;
+        }
 
         // Finds and inserts ingredient into user's fridge
         const result = await userCollection.updateOne(

@@ -20,17 +20,27 @@ async function fetchFridge() {
     }
 }
 
-
 async function displayFridgeContents() {
     try {
         const user = await fetchFridge();
         const results = user.fridge;
         const fridgeList = document.getElementById('fridge-contents');
+        // Displays message if user's fridge is empty
+        if (results.length < 1) {
+            console.log("aaa");
+            fridgeList.innerHTML = '';
+            let fridgeItem = document.createElement('li');
+            fridgeItem.id = 'empty-message';
+            fridgeItem.textContent = `Your fridge is empty!`;
+            fridgeList.appendChild(fridgeItem);
+            return;
+        }
+        
         // Clear contents, in case something was leftover
         fridgeList.innerHTML = '';
         results.forEach(element => {
             let fridgeItem = document.createElement('li');
-            fridgeItem.textContent = `${element.name}, ${element.id}`;
+            fridgeItem.textContent = `${capitalizeFirstLetter(element.name)}`;
             fridgeList.appendChild(fridgeItem);
         });
     } catch (error) {
@@ -40,3 +50,10 @@ async function displayFridgeContents() {
 
 // Display user's fridge contents when they launch the page
 displayFridgeContents();
+
+function capitalizeFirstLetter(str) {
+    if (!str) {
+        return "";
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
