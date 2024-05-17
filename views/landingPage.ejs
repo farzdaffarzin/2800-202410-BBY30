@@ -6,8 +6,7 @@
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <head>
-    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page Header</title>
+    <%- include('templates/header') %> 
 </head>
 <body>
     <header id="header">
@@ -34,11 +33,5 @@
 <!-- Our Custom Footer Containg Icons -->
 <!-------------------------------------->
 <body>
-    <footer class="footer">
-        <ion-icon name="home"></ion-icon>
-        <ion-icon name="receipt"></ion-icon>
-        <ion-icon name="fast-food"></ion-icon>
-        <ion-icon name="beaker"></ion-icon>
-        <ion-icon name="accessibility"></ion-icon>
-    </footer>
+    <%- include('templates/footer') %> 
 </body>

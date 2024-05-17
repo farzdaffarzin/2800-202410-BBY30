@@ -2,11 +2,7 @@
 <html>
 <head>
     <title><%= recipe.title %></title>
-    <style>
-        /* Basic Styling (Customize as needed) */
-        body { font-family: sans-serif; }
-        img { max-width: 100%; height: auto; }
-    </style>
+    <%- include('templates/header') %> 
 </head>
 <body>
     <h1><%= recipe.title %></h1>
@@ -21,5 +17,6 @@
 
     <h2>Instructions:</h2>
     <div><%- recipe.instructions %></div> 
+    <%- include('templates/footer') %> 
 </body>
 </html>
