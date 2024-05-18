@@ -1,0 +1,31 @@
+<%- include('./templates/header-boostrapOnly') %>
+<!-- Signup page content -->
+<style>
+    form{
+        width: 100%;
+        max-width: 330px;
+        padding: 15px;
+        margin: auto;
+    }
+</style>
+<form class="form-signin" action='/submitUser' method='post'>
+    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+    <label for="inputUsername" class="sr-only">Username</label>
+    <input name='username' type='text' class="form-control" placeholder='Username'> <br>
+    <label for="inputEmail" class="sr-only">Email address</label>
+    <input name='email' type='email' class="form-control" placeholder='Email address'> <br>
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input name='password' type='password' class="form-control" placeholder='password'> <br>
+    <div class="checkbox mb-3">
+    </div>
+    <button class="btn btn-lg btn-primary btn-block">Sign in</button>
+  </form>
+</body>
+</html>
+<!--h1>Sign Up</h1>
+<form action='/submitUser' method='post'>
+<input name='username' type='text'  class="form-control" placeholder='username'> <br>
+<input name='email' type='email' class="form-control" placeholder='email'> <br>
+<input name='password' type='password' class="form-control" placeholder='password'> <br>
+<button>Submit</button>
+</form> -->
