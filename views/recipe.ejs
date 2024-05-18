@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= recipe.title %></title>
+    <%- include('templates/header') %> 
+</head>
+<body>
+    <h1><%= recipe.title %></h1>
+    <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
+
+    <h2>Ingredients:</h2>
+    <ul>
+        <% recipe.extendedIngredients.forEach(ing => { %>
+            <li><%= ing.original %></li>
+        <% }); %>
+    </ul>
+
+    <h2>Instructions:</h2>
+    <div><%- recipe.instructions %></div> 
+    <%- include('templates/footer') %> 
+</body>
+</html>
