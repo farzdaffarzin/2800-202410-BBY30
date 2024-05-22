@@ -102,6 +102,30 @@ app.get('/recipes/:id', async (req, res) => {
         );
         const recipeDetails = response.data;
 
+        const ingredients = recipeDetails.extendedIngredients;
+        const username = req.session.username;
+        const user = await userCollection.findOne(
+            { username: username },
+            { projection: { _id: 0, username: 0, password: 0, email: 0 } } 
+        );
+        
+        const fridgeData = user.fridge;
+        const shoppingListData = user.shoppingList;
+        const missingIngredients = [];
+        ingredients.forEach(element => {
+            
+            // Check if the ingredient is in the user's fridge or shopping list
+            const existsInFridge = fridgeData.some(fridgeItem => fridgeItem.id === element.id);
+            const existsInShoppingList = shoppingListData.some(shoppingListItem => shoppingListItem.id == element.id);
+
+            if (!existsInFridge && !existsInShoppingList) {
+                // Format of ingredients to push to shopping list
+                missingIngredients.push({ 
+                    id: element.id, 
+                    name: element.name
+                });
+            }
+        });
         // Extract only necessary details (you can customize this)
         // const simplifiedDetails = {
         //     title: recipeDetails.title,
@@ -110,7 +134,7 @@ app.get('/recipes/:id', async (req, res) => {
         //     instructions: recipeDetails.instructions,
         // };
 
-        res.render('recipe', { recipe: recipeDetails });
+        res.render('recipe', { recipe: recipeDetails, missingIngredients: missingIngredients });
     } catch (error) {
         console.error("Error fetching recipe details:", error);
         res.status(500).json({ error: 'Failed to fetch recipe details' });
@@ -135,6 +159,41 @@ app.post('/recipes', async (req, res) => {
         } else { // Other errors (e.g., network issues)
             res.status(500).json({ error: 'Failed to fetch recipes' });
         }
+    }
+});
+
+// Route to add items to users' shopping list
+app.post('/addToShoppingList', async (req, res) => {
+    console.log(req.body.ingredientId, req.body.ingredientName);
+    const ingredientId = parseInt(req.body.ingredientId, 10);
+    const ingredientName = req.body.ingredientName;
+    const username = req.session.username;
+
+    const user = await userCollection.findOne({ username: username });
+
+    if (!user) {
+        res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const ingredient = {
+        id: ingredientId,
+        name: ingredientName
+    };
+
+    try {
+        const result = await userCollection.updateOne(
+            { username: username },
+            { $push: { shoppingList: ingredient } }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(400).json({ success: false, message: 'Failed to add the ingredient to the shopping list.' });
+        }
+
+        res.json({ success: true });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'An error occurred while adding the ingredient to the shopping list.' });
     }
 });
 

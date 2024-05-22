@@ -4,6 +4,7 @@
     <title><%= recipe.title %></title>
     <%- include('templates/header') %> 
 </head>
+
 <body>
     <h1><%= recipe.title %></h1>
     <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
@@ -15,8 +16,19 @@
         <% }); %>
     </ul>
 
+    <!-- Add missing ingredients here -->
+    <h2>Missing Ingredients</h2>
+    <ul id="missingIngredientsList">
+        <% missingIngredients.forEach(element => { %>
+            <li data-id="<%= element.id %>" data-name="<%= element.name %>">
+                <%= element.name %>
+            </li>
+        <%});%>
+    </ul>
+
     <h2>Instructions:</h2>
     <div><%- recipe.instructions %></div> 
     <%- include('templates/footer') %> 
+    <script src="../addToShoppingList.js"></script>
 </body>
 </html>
