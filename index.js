@@ -10,16 +10,17 @@ const bcrypt = require('bcrypt'); // Password hashing
 const Joi = require('joi'); // Input validation
 const crypto = require('crypto'); // Random token generation
 const nodemailer = require('nodemailer');// Email sending
-
+const { MongoClient, ObjectId } = require('mongodb'); 
 const { getRecipesByIngredients } = require('./recipeGen'); // Import functions
 const { ingredientSearch } = require('./ingredientApiSearch.js');
-//dotenv.config({ path: path.join(__dirname, '.env') });
+const { connectToDatabase, getClient } = require('./databaseConnection');
+const User = require('./userModel.js');
 
 const saltRounds = 12; // Number of rounds for bcrypt hashing
 
 const app = express(); // Create an instance of Express
 const port = process.env.PORT || 4500; // Set the port to the value in environment variable or default to 4500
-
+app.use(express.json());
 /* Secret information section - loaded from environment variables */
 const mongodb_host = process.env.MONGODB_HOST;
 const mongodb_user = process.env.MONGODB_USER;
@@ -30,21 +31,32 @@ const node_session_secret = process.env.NODE_SESSION_SECRET;
 const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 /* END secret section */
 
-// Include database connection (assuming `include` is defined in utils.js)
-var { database } = include('databaseConnection');
-
 // Access the users collection from the MongoDB database
-const userCollection = database.db(mongodb_database).collection('users');
-
-// Session expire time set to two days
-const expireTime = 2 * 24 * 60 * 60 * 1000; // 2 days in milliseconds
+let userCollection; // Define a variable to store the user collection
 
 // Create a MongoDB session store
-var mongoStore = MongoStore.create({
-    mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/sessions`, // MongoDB connection string
-    crypto: {
-        secret: mongodb_session_secret // Secret for encrypting session data
-    }
+var mongoStore;
+
+// Connect to the MongoDB Atlas cluster
+connectToDatabase().then(() => {
+    // Initialize the userCollection and mongoStore after connecting to the database
+    const client = getClient();
+    const database = client.db(process.env.MONGODB_DATABASE);
+    userCollection = database.collection('users');
+    mongoStore = MongoStore.create({
+        client: client,
+        crypto: {
+            secret: mongodb_session_secret // Secret for encrypting session data
+        }
+    });
+
+    // Start the server and listen on the specified port
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`); // Log server start
+    });
+}).catch(error => {
+    console.error("Failed to connect to MongoDB Atlas:", error);
+    process.exit(1); // Exit the process with a non-zero exit code
 });
 
 // Use session middleware
@@ -54,12 +66,14 @@ app.use(session({
     saveUninitialized: false, // Do not save uninitialized sessions
     resave: true // Resave session even if not modified
 }));
-// parse
+
+// Parse
 app.use(express.urlencoded({extended: true}));
-
-
 app.use(express.static('public'));
 app.use(express.json());
+
+// Set session expiration time
+const expireTime = 60 * 60 * 1000; // 1 hour in milliseconds
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -82,21 +96,14 @@ app.get('/prompt', (req,res) => {
 })
 
 // Route to fetch recipe details by ID
-app.get('/recipes/:id', async (req, res) => {
+app.get('/recipe/:id', async (req, res) => {
     try {
         const recipeId = req.params.id;
+        const userId = req.session.userId;
         const response = await axios.get(
             `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}&includeNutrition=false`
         );
         const recipeDetails = response.data;
-
-        // Extract only necessary details (you can customize this)
-        // const simplifiedDetails = {
-        //     title: recipeDetails.title,
-        //     image: recipeDetails.image,
-        //     extendedIngredients: recipeDetails.extendedIngredients,
-        //     instructions: recipeDetails.instructions,
-        // };
 
         res.render('recipe', { recipe: recipeDetails }); 
     } catch (error) {
@@ -126,7 +133,43 @@ app.post('/recipes', async (req, res) => {
     }
 });
 
-// Route for home page
+// Route to handle saving a recipe
+app.post('/save-recipe', async (req, res) => {
+    try {
+        const { recipeId } = req.body;
+        const userId = req.session.userId; // Assuming you have middleware to set req.user
+        await User.findByIdAndUpdate(userId, { $addToSet: { savedRecipes: recipeId } });
+        res.status(200).json({ message: 'Recipe saved successfully' });
+    } catch (error) {
+        console.error('Error saving recipe:', error);
+        res.status(500).json({ message: 'Error saving recipe' });
+    }
+});
+
+app.post('/remove-recipe', async (req, res) => {
+    try {
+        const { recipeId } = req.body;
+        const userId = req.session.userId;
+        await User.findByIdAndUpdate(userId, { $pull: { savedRecipes: recipeId } });
+        res.status(200).json({ message: 'Recipe removed successfully' });
+    } catch (error) {
+        console.error('Error removing recipe:', error);
+        res.status(500).json({ message: 'Error removing recipe' });
+    }
+});
+
+app.get('/get-saved-recipes', async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId);
+        res.status(200).json({ savedRecipes: user.savedRecipes });
+    } catch (error) {
+        console.error('Error fetching saved recipes:', error);
+        res.status(500).json({ message: 'Error fetching saved recipes' });
+    }
+});
+
+// Route for fridge page
 app.get("/fridge", async (req, res) => {
     res.render('fridge'); // Render fridge page
 });
@@ -246,13 +289,13 @@ app.post('/submitUser', async (req, res) => {
     var hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Insert the new user into the database
-    await userCollection.insertOne({ username: username, password: hashedPassword, email: email, fridge: [] });
-    
+    const newUser = { username: username, password: hashedPassword, email: email, fridge: [], savedRecipes: [] };
+    await userCollection.insertOne(newUser);    
     // Set session variables
     req.session.authenticated = true;
     req.session.username = username;
     req.session.cookie.maxAge = expireTime; // Set session expiration time
-    
+    req.session.userId = newUser._id; 
     console.log("Inserted user"); // Log user insertion
     res.redirect("/Home"); // Redirect to Home page
 });
@@ -293,7 +336,7 @@ app.post('/loggingin', async (req, res) => {
         req.session.username = result[0].username;
         req.session.user_type = result[0].user_type;
         req.session.cookie.maxAge = expireTime; // Set session expiration time
-
+        req.session.userId = result[0]._id;
         res.redirect('/loggedIn'); // Redirect to loggedIn page if password is correct
         return;
     } else {
@@ -394,12 +437,33 @@ app.get('/loggedin', (req, res) => {
 
 
 // Route for the home page
-app.get("/Home", (req, res) => {
+app.get("/Home", async (req, res) => {
     if (!req.session.authenticated) {
-        res.redirect('/'); // Redirect to home page if not authenticated
+        res.redirect('/'); // Redirect to index page if not authenticated
         return;
     } else {
-        res.render('landingPage', {username: req.session.username}); // Render the Home.ejs view if authenticated
+        try {
+            console.log(req.session.userId);
+            const userId = req.session.userId; 
+    
+            // Fetch the user's savedRecipes array directly
+            const user = await userCollection.findOne({ _id: userId });
+            const savedRecipeIds = user?.savedRecipes || []; 
+
+            // Fetch detailed information for each saved recipe from Spoonacular API
+            const recipeDetailsPromises = savedRecipeIds.map(recipeId => {
+                return axios.get(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}&includeNutrition=false`);
+            });
+            const recipeDetailsResponses = await Promise.all(recipeDetailsPromises);
+
+            // Extract recipe details
+            const recipeDetails = recipeDetailsResponses.map(response => response.data);
+
+            res.render('landingPage', { username: req.session.username, recipes: recipeDetails });
+        } catch (error) {
+            console.error("Error fetching saved recipes:", error);
+            res.status(500).send("Internal Server Error");
+        }
     }
 });
 
@@ -408,7 +472,4 @@ app.get("*", (req, res) => {
     res.status(404).render('404'); // Render the 404.ejs view
 });
 
-// Start the server and listen on the specified port
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`); // Log server start
-});
+
