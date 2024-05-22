@@ -8,7 +8,7 @@ async function fetchRecipes() {
     }
 
     try {
-        const response = await fetch('/recipes', { 
+        const response = await fetch('/recipes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -29,7 +29,7 @@ async function generateRecipes() {
 
     const addedIngredients = Array.from(document.querySelectorAll('#addedIngredients li'))
         .map(el => el.textContent);
-    
+
     const allIngredients = selectedIngredients.concat(addedIngredients);
 
     if (allIngredients.length === 0) {
@@ -38,7 +38,7 @@ async function generateRecipes() {
     }
 
     try {
-        const response = await fetch('/recipes', { 
+        const response = await fetch('/recipes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -52,7 +52,44 @@ async function generateRecipes() {
         console.error("Error fetching recipes:", error);
     }
 }
+// new function specifically handles the logic for generating recipes from the prompt page
+async function generateRecipesFromPrompt() {
+    const selectedIngredients = Array.from(document.querySelectorAll('#fridgeList input[type="checkbox"]:checked'))
+        .map(el => el.value);
+    const addedIngredients = Array.from(document.querySelectorAll('#addedIngredients li'))
+        .map(el => el.textContent);
 
+    const allIngredients = selectedIngredients.concat(addedIngredients);
+
+    if (allIngredients.length === 0) {
+        alert("Please select or add at least one ingredient.");
+        return;
+    }
+
+    try {
+        const response = await fetch('/recipes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ingredients: allIngredients }),
+        });
+
+        const recipes = await response.json();
+
+        // Check if recipes were found
+        if (recipes.length > 0) {
+            displayRecipes(recipes);
+        } else {
+            const recipeList = document.getElementById('recipeList');
+            recipeList.innerHTML = '<p>No recipes found for the given ingredients.</p>';
+        }
+
+    } catch (error) {
+        console.error("Error fetching recipes:", error);
+        // You can add a more user-friendly error message here
+    }
+}
 function addIngredient() {
     const addIngredientInput = document.getElementById('addIngredient');
     const newIngredient = addIngredientInput.value.trim();
@@ -68,7 +105,7 @@ function addIngredient() {
 
 
 // Function to display the fetched recipes as a list
-function displayRecipes(recipes) {
+async function displayRecipes(recipes) {
     const recipeList = document.getElementById('recipeList');
     recipeList.innerHTML = ''; // Clear previous results
 
@@ -77,42 +114,127 @@ function displayRecipes(recipes) {
         return;
     }
 
+    const isPromptPage = window.location.pathname === '/prompt';
+    const savedRecipeIds = isPromptPage ? [] : await getSavedRecipes(); 
+
     recipes.forEach(recipe => {
         const listItem = document.createElement('li');
         const titleLink = document.createElement('a');
         titleLink.textContent = recipe.title;
         titleLink.classList.add('recipe-title');
-
-        // Add data attribute for recipe ID
-        titleLink.dataset.recipeId = recipe.id; // Set recipe ID as a data attribute
-
+        titleLink.dataset.recipeId = recipe.id;
         listItem.appendChild(titleLink);
+
+        const saveButton = document.createElement('button');
+        saveButton.id = `saveButton-${recipe.id}`;
+        saveButton.textContent = savedRecipeIds.includes(recipe.id) ? 'Remove from Favorites' : 'Save to Favorites';
+        saveButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent triggering the recipe detail fetch
+            toggleFavorite(recipe.id);
+        });
+        listItem.appendChild(saveButton);
+
         recipeList.appendChild(listItem);
     });
 
-    // Event Delegation:
     recipeList.addEventListener('click', (event) => {
         const target = event.target;
         if (target.classList.contains('recipe-title')) {
-            const recipeId = target.dataset.recipeId; 
-            console.log("Fetching details for recipe:", recipeId); // Debugging
-            fetchRecipeDetails(recipeId);
+            const recipeId = target.dataset.recipeId;
+            fetchRecipeDetails(recipeId); 
         }
     });
 }
 
 
-// Function to fetch and display recipe details
 async function fetchRecipeDetails(recipeId) {
     try {
         // Redirect to the recipe details page (using JavaScript's window.location)
-        window.location.href = `/recipes/${recipeId}`; 
+        window.location.href = `/recipe/${recipeId}`;
     } catch (error) {
         console.error("Error fetching recipe details:", error);
-        // Handle error and show a user-friendly message
+        // Handle the error, e.g., display an error message to the user
     }
 }
 
-  
+// async function checkIfRecipeIsSaved(recipeId) {
+//   // Fetch saved recipes for the logged-in user
+//   const savedRecipeIds = /* your logic to fetch saved recipe IDs */; 
+
+//   // Check if the current recipe ID is in the list of saved recipes
+//   return savedRecipeIds.includes(recipeId);
+// }
+
+async function toggleFavorite(recipeId) {
+    console.log("Toggling favorite for recipe ID:", recipeId); // Add recipe ID to console log
+
+    // Dynamically select the button based on recipe ID
+    const saveButton = document.getElementById(`saveButton-${recipeId}`);
+    if (!saveButton) {
+        console.error("Button not found:", `saveButton-${recipeId}`);
+        return;
+    }
+
+    const isSaved = saveButton.textContent.trim() === "Remove from Favorites";
+    const action = isSaved ? 'remove-recipe' : 'save-recipe';
+    const url = `/${action}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ recipeId }),
+        });
+
+        if (response.ok) {
+            saveButton.textContent = isSaved ? 'Save to Favorites' : 'Remove from Favorites';
+        } else {
+            alert("Error toggling favorite. Please try again.");
+        }
+    } catch (error) {
+        console.error("Error toggling favorite:", error);
+        alert("An error occurred. Please try again later.");
+    }
+}
+
+
+async function saveRecipe(recipeId) {
+    try {
+        const response = await fetch('/save-recipe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ recipeId }),
+        });
+
+        if (response.ok) {
+            // Update the UI to indicate the recipe was saved
+            // (e.g., change button text, show a success message)
+            const saveButton = document.getElementById('saveButton');
+            saveButton.textContent = "Saved!";
+            saveButton.disabled = true;
+        } else {
+            alert("Error saving recipe. Please try again.");
+        }
+    } catch (error) {
+        console.error("Error saving recipe:", error);
+        alert("An error occurred while saving. Please try again later.");
+    }
+}
+
+async function getSavedRecipes() {
+    try {
+        const response = await fetch('/get-saved-recipes');
+        if (response.ok) {
+            const data = await response.json();
+            return data.savedRecipes || [];
+        } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Error fetching saved recipes:', error);
+        return []; // Return an empty array in case of an error
+    }
+}
+
 
 

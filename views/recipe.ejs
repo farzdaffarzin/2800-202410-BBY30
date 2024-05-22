@@ -8,6 +8,11 @@
     <h1><%= recipe.title %></h1>
     <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
 
+    <button type="button" id="saveButton-<%= recipe.id %>">
+        <% if (recipe.isSaved) { %>Remove from Favorites
+        <% } else { %>Save to Favorites<% } %>
+    </button>
+    
     <h2>Ingredients:</h2>
     <ul>
         <% recipe.extendedIngredients.forEach(ing => { %>
@@ -17,6 +22,13 @@
 
     <h2>Instructions:</h2>
     <div><%- recipe.instructions %></div> 
+
     <%- include('templates/footer') %> 
+    <script src="/recipeDisplay.js"></script> <!-- Ensure the correct path -->
+    <script>
+        document.getElementById('saveButton-<%= recipe.id %>').addEventListener('click', () => {
+            toggleFavorite('<%= recipe.id %>');
+        });
+    </script>
 </body>
 </html>
