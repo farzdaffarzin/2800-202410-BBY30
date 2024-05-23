@@ -17,11 +17,17 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Function to fetch recipes from Spoonacular API
-async function getRecipesByIngredients(ingredients, axiosInstance = axios) {  // Default to the global axios if not provided
+async function getRecipesByIngredients(ingredients, cuisine, axiosInstance = axios) {  // Default to the global axios if not provided
     try {
-        const url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${SPOONACULAR_API_KEY}&ingredients=${ingredients.join(',')}`;
-        const response = await axiosInstance.get(url); // Use the provided or default axiosInstance
-        return response.data;
+        if (cuisine === "any" || cuisine == null) {
+            const url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${SPOONACULAR_API_KEY}&ingredients=${ingredients.join(',')}`;
+            const response = await axiosInstance.get(url); // Use the provided or default axiosInstance
+            return response.data;
+        } else {
+            const url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&ingredients=${ingredients.join(',')}&cuisine=${cuisine}`;
+            const response = await axiosInstance.get(url); // Use the provided or default axiosInstance
+            return response.data.results;
+        }
     } catch (error) {
         console.error('Error fetching recipes:', error);
         throw error;

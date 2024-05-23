@@ -154,10 +154,9 @@ app.get('/recipe/:id', async (req, res) => {
 app.post('/recipes', async (req, res) => {
     try {
         const ingredients = req.body.ingredients || ['chicken', 'broccoli', 'rice']; // Default ingredients if none provided
-
-        const recipes = await getRecipesByIngredients(ingredients); // Pass axios instance
+        const cuisine = req.body.cuisine;
+        const recipes = await getRecipesByIngredients(ingredients, cuisine); // Pass axios instance
         // (Optional) Store recipes in MongoDB if needed...
-
         res.json(recipes);
     } catch (error) {
         // Error handling for different cases:
