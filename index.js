@@ -350,7 +350,7 @@ app.post('/ingredients', async (req, res) => {
 
 // Route for the signup page
 app.get("/signup", (req, res) => {
-    res.render('signup'); // Render the signup.ejs view
+    res.render('signup',{ query: req.query}); // Render the signup.ejs view
 });
 
 // Route to handle user signup form submission
@@ -373,6 +373,13 @@ app.post('/submitUser', async (req, res) => {
         return;
     }
 
+    // Check if email already exists in the database
+    const emailExists = await userCollection.findOne({ email: email });
+    if (emailExists) {
+        res.redirect("/signup?error=emailExists"); // Redirect with an error query
+        return;
+    }
+
     // Hash the password using bcrypt
     var hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -387,6 +394,7 @@ app.post('/submitUser', async (req, res) => {
     console.log("Inserted user"); // Log user insertion
     res.redirect("/Home"); // Redirect to Home page
 });
+
 
 // Route for the login page
 app.get('/login', (req, res) => {
