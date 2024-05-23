@@ -1,27 +1,99 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Recipe Prompt</title>
-    <script src="recipeDisplay.js"></script> 
-    <%- include('templates/header') %> 
+    <script src="recipeDisplay.js"></script>
+    <%- include('templates/header') %>
+
+        <style>
+            body {
+            margin-top: 100px; 
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            }   
+
+            h2 {
+                font-size: 24px;
+                color: white; 
+            }
+
+            h3 {
+                font-size: 18px;
+                color: white; 
+            }
+
+            ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            li {
+                margin-bottom: 10px;
+            }
+            /* Checkbox Styling*/
+            input[type="checkbox"] {
+                color: rgb(255, 251, 0); 
+            }
+
+            label {
+                font-weight: bold;
+            }
+
+            input[type="text"] {
+                /* Style for the "Add Missing Ingredients" input */
+                width: 200px;
+                padding: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            button {
+                /* Style for buttons */
+                background-color: rgb(93, 141, 121);
+                color: #fff;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+
+            }
+
+            button:hover {
+        background-color: rgb(82, 83, 78);
+            }
+
+            #recipeList,
+            #recipeDetails {
+                margin-top: 20px;
+                font-size: 16px;
+                color: white; 
+            }
+        </style>
+
 </head>
+
 <body>
     <h2>Recipe Prompt</h2>
 
     <h3>Ingredients in your Fridge:</h3>
     <ul id="fridgeList">
-        <% fridgeData.forEach(item => { %>
+        <% fridgeData.forEach(item=> { %>
             <li>
                 <input type="checkbox" id="<%= item.name %>" name="<%= item.name %>" value="<%= item.name %>">
-                <label for="<%= item.name %>"><%= item.name %> (<%= item.quantity %> <%= item.unit %>)</label>
+                <label for="<%= item.name %>">
+                    <%= item.name %> (<%= item.quantity %>
+                            <%= item.unit %>)
+                </label>
             </li>
-        <% }); %>
+            <% }); %>
     </ul>
 
     <h3>Add Missing Ingredients:</h3>
     <input type="text" id="addIngredient">
     <button onclick="addIngredient()">Add</button>
-    <ul id="addedIngredients"></ul> 
+    <ul id="addedIngredients"></ul>
 
     <select name="cuisines" id="cuisineSelector">
         <option value="any">Any</option>
@@ -57,7 +129,8 @@
     <button onclick="generateRecipesFromPrompt()">Generate Recipes</button> 
 
     <ul id="recipeList"></ul>
-    <div id="recipeDetails"></div> 
+    <div id="recipeDetails"></div>
     <%- include('templates/footer') %>
 </body>
+
 </html>
