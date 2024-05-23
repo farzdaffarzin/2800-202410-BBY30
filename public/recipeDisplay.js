@@ -84,7 +84,7 @@ async function generateRecipesFromPrompt() {
             displayRecipes(recipes);
         } else {
             const recipeList = document.getElementById('recipeList');
-            recipeList.innerHTML = '<p>No recipes found for the given ingredients.</p>';
+            recipeList.innerHTML = '<p>No recipes found for the given ingredients and cuisine.</p>';
         }
 
     } catch (error) {

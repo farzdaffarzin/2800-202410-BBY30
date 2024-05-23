@@ -19,7 +19,7 @@ app.set('views', path.join(__dirname, 'views'));
 // Function to fetch recipes from Spoonacular API
 async function getRecipesByIngredients(ingredients, cuisine, axiosInstance = axios) {  // Default to the global axios if not provided
     try {
-        if (cuisine === "any") {
+        if (cuisine === "any" || cuisine == null) {
             const url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${SPOONACULAR_API_KEY}&ingredients=${ingredients.join(',')}`;
             const response = await axiosInstance.get(url); // Use the provided or default axiosInstance
             return response.data;
