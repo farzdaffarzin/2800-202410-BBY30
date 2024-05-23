@@ -36,5 +36,20 @@ footer {
 }
 
 footer ion-icon {
-    font-size: 24px;
+    font-size: 30px;
 }
+
+a { 
+    color: white;
+}
+
+.footer a ion-icon { 
+    color: white;  transition: color 0.3s; 
+}
+
+.footer a:hover ion-icon { 
+    color: rgb(255, 251, 0); 
+}
+
+
+  
