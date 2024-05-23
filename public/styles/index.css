@@ -1,0 +1,46 @@
+/* General body styling */
+body {
+    font-family: 'Verdana', sans-serif; /* Consistent font, Verdana */
+    background-color: #bfd3b5; /* Dark gray text for readability */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    display: flex;
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+    min-height: 100vh; /* Minimum height is full viewport height */
+    width: 100vw; /* Ensures width is always full viewport width */
+    overflow: hidden; /* Prevents scroll bars */
+}
+
+/* Container styling */
+.container {
+    text-align: center; /* Center text and content */
+    background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent white background */
+    padding: 40px;
+    border-radius: 8px; /* Rounded corners for the container */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    width: auto; /* Auto width based on content */
+    max-width: 90%; /* Prevents the container from being too wide on large screens */
+}
+
+/* Header styling */
+h1, h3 {
+    color: #506a5b; /* Dark green shade */
+}
+
+/* Button styling */
+.btn {
+    background-color: #88ac99; /* Medium mint green */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer; /* Indicates that the button is clickable */
+}
+
+.btn:hover {
+    background-color: #7fa593; /* Slightly darker green on hover */
+}
