@@ -60,6 +60,9 @@ async function generateRecipesFromPrompt() {
         .map(el => el.textContent);
 
     const allIngredients = selectedIngredients.concat(addedIngredients);
+    const cuisine = document.getElementById('cuisineSelector').value;
+
+    console.log(cuisine);
 
     if (allIngredients.length === 0) {
         alert("Please select or add at least one ingredient.");
@@ -72,11 +75,10 @@ async function generateRecipesFromPrompt() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ ingredients: allIngredients }),
+            body: JSON.stringify({ ingredients: allIngredients, cuisine: cuisine }),
         });
 
         const recipes = await response.json();
-
         // Check if recipes were found
         if (recipes.length > 0) {
             displayRecipes(recipes);
