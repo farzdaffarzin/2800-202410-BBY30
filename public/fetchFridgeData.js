@@ -1,6 +1,6 @@
 async function fetchFridge() {
     try {
-        const response = await fetch('/getUserFridge', { 
+        const response = await fetch('/getUserFridge', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -27,10 +27,10 @@ async function storePresetInFridge(data) {
     try {
         const fridgeResponse = await fetch('/insertIntoFridge', {
             method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dataToStore)
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToStore)
         });
         if (!fridgeResponse.ok) {
             throw new Error('Failed to insert item into fridge');
@@ -44,23 +44,29 @@ async function loadPresetFridge() {
     try {
         const response = await fetch('fridgePreset.json');
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+            throw new Error('Network response was not ok');
         }
         const data = await response.json();
 
         const fridgeList = document.getElementById('fridge-contents');
-        fridgeList.innerHTML = '';
-        data.forEach(element => {
-            let fridgeItem = document.createElement('li');
-            fridgeItem.textContent = `${capitalizeFirstLetter(element.name)}, ${element.quantity}`;
-            fridgeItem.id = element.id;
-            fridgeList.appendChild(fridgeItem);
-        });
-        storePresetInFridge(data);
-
-      } catch (err) {
+        const user = await fetchFridge();
+        const fridgeData = user.fridge;
+        if (user.fridge.length < 1) {
+            fridgeList.innerHTML = '';
+            data.forEach(element => {
+                const existsInFridge = fridgeData.some(fridgeItem => fridgeItem.id === element.id);
+                if (!existsInFridge) {
+                    let fridgeItem = document.createElement('li');
+                    fridgeItem.textContent = `${capitalizeFirstLetter(element.name)}, ${element.quantity}`;
+                    fridgeItem.id = element.id;
+                    fridgeList.appendChild(fridgeItem);
+                }
+            });
+            storePresetInFridge(data);
+        }
+    } catch (err) {
         console.error('There was a problem fetching fridgePreset.json:', err);
-      }
+    }
 }
 
 async function displayFridgeContents() {
@@ -77,7 +83,7 @@ async function displayFridgeContents() {
             fridgeList.appendChild(fridgeItem);
             return;
         }
-        
+
         // Clear contents, in case something was leftover
         fridgeList.innerHTML = '';
         results.forEach(element => {

@@ -555,6 +555,10 @@ app.get("/Home", async (req, res) => {
     }
 });
 
+app.get('/location', (req, res) => {
+    res.render('location');
+});
+
 // Route for handling 404 errors
 app.get("*", (req, res) => {
     res.status(404).render('404'); // Render the 404.ejs view
