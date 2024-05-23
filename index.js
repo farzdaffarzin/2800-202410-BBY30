@@ -10,7 +10,6 @@ const bcrypt = require('bcrypt'); // Password hashing
 const Joi = require('joi'); // Input validation
 const crypto = require('crypto'); // Random token generation
 const nodemailer = require('nodemailer');// Email sending
-const favicon = require('serve-favicon');//for favicon
 
 
 const { MongoClient, ObjectId } = require('mongodb'); 
@@ -26,7 +25,8 @@ const port = process.env.PORT || 4500; // Set the port to the value in environme
 app.use(express.json());
 /* Secret information section - loaded from environment variables */
 const mongodb_host = process.env.MONGODB_HOST;
-const mongodb_user = process.env.MONGODB_USER;
+const mongodb_user = process.env.MONGODB_USER;//const favicon = require('serve-favicon');//for favicon
+
 const mongodb_password = process.env.MONGODB_PASSWORD;
 const mongodb_database = process.env.MONGODB_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
