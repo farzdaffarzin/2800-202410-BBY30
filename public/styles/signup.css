@@ -1,0 +1,55 @@
+/* General body styling */
+body {
+    background-color: #bfd3b5; /* Light mint green background */
+    font-family: 'Verdana', sans-serif; /* Consistent font, Verdana */
+    color: #353535; /* Dark gray text for readability */
+    display: flex;
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+    height: 100vh; /* Full viewport height */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+}
+
+/* Form styling for signup */
+.form-signin {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)),
+        linear-gradient(to bottom, rgb(93, 141, 121), rgba(93, 141, 121, 0.753));    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    border-radius: 8px; /* Rounded corners */
+    text-align: center; /* Center text inside the wrapper */
+}
+
+/* Headers inside form */
+h1 {
+    color: #353535; /* Dark gray color for heading */
+    margin-bottom: 30px; /* Spacing below the heading */
+}
+
+/* Input field styling */
+input[type="text"], input[type="email"], input[type="password"] {
+    width: 100%; /* Full width of the form */
+    padding: 10px;
+    margin-bottom: 20px; /* Space between inputs */
+    border: 2px solid #7fa593; /* Teal green border to match login page */
+    border-radius: 4px; /* Rounded corners */
+    box-sizing: border-box; /* Include padding and border in the width calculation */
+}
+
+/* Button styling, adjusted for consistency */
+button.btn {
+    width: 100%;
+    background-color: #506a5b; /* Dark green shade from the login page */
+    color: #ffffff; /* White text for readability */
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer; /* Indicates that the button is clickable */
+}
+
+button.btn:hover {
+    background-color: #3d5145; /* Slightly darker green on hover */
+}
