@@ -1,11 +1,11 @@
-async function addToShoppingList(ingredientId, ingredientName) {
+async function addToShoppingList(ingredientId, ingredientName, ingredientAmount) {
     try {
         const response = await fetch('/addToShoppingList', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ ingredientId: ingredientId, ingredientName: ingredientName })
+            body: JSON.stringify({ ingredientId: ingredientId, ingredientName: ingredientName, ingredientAmount: ingredientAmount })
         });
 
         if (!response.ok) {
@@ -28,8 +28,9 @@ document.getElementById('missingIngredientsList').addEventListener('click', asyn
     if (event.target && event.target.nodeName === 'LI') {
         const ingredientId = event.target.getAttribute('data-id');
         const ingredientName = event.target.getAttribute('data-name');
-        
-        const result = await addToShoppingList(ingredientId, ingredientName);
+        const ingredientAmount = event.target.getAttribute('data-amount');
+
+        const result = await addToShoppingList(ingredientId, ingredientName, ingredientAmount);
 
         if (result.success) {
             event.target.textContent = ' Added to shopping list';

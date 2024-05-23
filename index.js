@@ -133,12 +133,12 @@ app.get('/recipe/:id', async (req, res) => {
             // Check if the ingredient is in the user's fridge or shopping list
             const existsInFridge = fridgeData.some(fridgeItem => fridgeItem.id === element.id);
             const existsInShoppingList = shoppingListData.some(shoppingListItem => shoppingListItem.id == element.id);
-
             if (!existsInFridge && !existsInShoppingList) {
                 // Format of ingredients to push to shopping list
                 missingIngredients.push({ 
                     id: element.id, 
-                    name: element.name
+                    name: element.name,
+                    amount: element.amount
                 });
             }
         });
@@ -175,6 +175,10 @@ app.post('/addToShoppingList', async (req, res) => {
     console.log(req.body.ingredientId, req.body.ingredientName);
     const ingredientId = parseInt(req.body.ingredientId, 10);
     const ingredientName = req.body.ingredientName;
+    const ingredientAmount = req.body.ingredientAmount;
+
+    const ingredientDetails = await axios.get(`https://api.spoonacular.com/food/ingredients/${ingredientId}/information?apiKey=${SPOONACULAR_API_KEY}&amount=${ingredientAmount}`);
+    const ingredientPrice = ingredientDetails.data.estimatedCost.value / 100; // prices are stored in cents, divide by 100 for dollars and cents
     const username = req.session.username;
 
     const user = await userCollection.findOne({ username: username });
@@ -185,7 +189,9 @@ app.post('/addToShoppingList', async (req, res) => {
 
     const ingredient = {
         id: ingredientId,
-        name: ingredientName
+        name: ingredientName,
+        amount: ingredientAmount,
+        price: ingredientPrice
     };
 
     try {
@@ -347,6 +353,16 @@ app.post('/ingredients', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch ingredients' });
     }
 });
+
+app.post('/getIngredientPrice', (req, res) => {
+    
+    res.json();
+}); 
+
+// app.post('/getRecipeTotalPrice', (req, res) => {
+    
+//     req.json();
+// });
 
 // Route for the signup page
 app.get("/signup", (req, res) => {
