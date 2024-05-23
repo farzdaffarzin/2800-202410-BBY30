@@ -24,7 +24,7 @@ async function getRecipesByIngredients(ingredients, cuisine, axiosInstance = axi
             const response = await axiosInstance.get(url); // Use the provided or default axiosInstance
             return response.data;
         } else {
-            const url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&ingredients=${ingredients.join(',')}&cuisine=${cuisine}`;
+            const url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&includeIngredients=${ingredients.join(',')}&cuisine=${cuisine}`;
             const response = await axiosInstance.get(url); // Use the provided or default axiosInstance
             return response.data.results;
         }
