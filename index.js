@@ -178,7 +178,7 @@ app.post('/addToShoppingList', async (req, res) => {
     const ingredientAmount = req.body.ingredientAmount;
 
     const ingredientDetails = await axios.get(`https://api.spoonacular.com/food/ingredients/${ingredientId}/information?apiKey=${SPOONACULAR_API_KEY}&amount=${ingredientAmount}`);
-    const ingredientPrice = ingredientDetails.data.estimatedCost.value / 100; // prices are stored in cents, divide by 100 for dollars and cents
+    const ingredientPrice = (ingredientDetails.data.estimatedCost.value / 100).toFixed(2); // prices are stored in cents, divide by 100 for dollars and cents
     const username = req.session.username;
 
     const user = await userCollection.findOne({ username: username });
@@ -354,15 +354,25 @@ app.post('/ingredients', async (req, res) => {
     }
 });
 
-app.post('/getIngredientPrice', (req, res) => {
-    
-    res.json();
-}); 
+// Route for calculating the total cost of a recipe
+app.post('/recipeCost', async (req, res) => {
+    try {
+        const recipeId = req.body.recipeId;
+        const response = await axios.get(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}&includeNutrition=false`);
+        
+        if (!response.data.pricePerServing) {
+            throw new Error('Price per serving not available');
+        }
 
-// app.post('/getRecipeTotalPrice', (req, res) => {
-    
-//     req.json();
-// });
+        const totalCost = response.data.pricePerServing;
+
+        res.json({ totalCost: totalCost });
+    } catch (error) {
+        console.error('Error:', error.message);
+        res.status(500).json({ error: 'Could not fetch recipe cost' });
+    }
+});
+
 
 // Route for the signup page
 app.get("/signup", (req, res) => {
