@@ -38,10 +38,6 @@ document.addEventListener("DOMContentLoaded", async function() {
             });
 
             const label = document.createElement('label');
-            label.textContent = `${ingredient.amount} `;
-            if (ingredient.unit != null) {
-                label.textContent += `${ingredient.unit} of `;
-            }
             label.textContent += ingredient.name;
     
             const price = document.createElement('span');
