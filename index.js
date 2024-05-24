@@ -119,6 +119,7 @@ app.get('/recipe/:id', async (req, res) => {
         const recipeDetails = response.data;
 
         const ingredients = recipeDetails.extendedIngredients;
+        console.log(ingredients);
         const username = req.session.username;
         const user = await userCollection.findOne(
             { username: username },
@@ -138,7 +139,8 @@ app.get('/recipe/:id', async (req, res) => {
                 missingIngredients.push({ 
                     id: element.id, 
                     name: element.name,
-                    amount: element.amount
+                    amount: element.amount,
+                    unit: element.unit
                 });
             }
         });
@@ -172,13 +174,14 @@ app.post('/recipes', async (req, res) => {
 
 // Route to add items to users' shopping list on ingredientslistpage.
 app.post('/addToShoppingList', async (req, res) => {
-    console.log(req.body.ingredientId, req.body.ingredientName);
+    console.log(req.body.ingredientId, req.body.ingredientName, req.body.ingredientUnit);
     const ingredientId = parseInt(req.body.ingredientId, 10);
     const ingredientName = req.body.ingredientName;
     const ingredientAmount = parseFloat(req.body.ingredientAmount);
+    const ingredientUnit = req.body.ingredientUnit;
 
-    const ingredientDetails = await axios.get(`https://api.spoonacular.com/food/ingredients/${ingredientId}/information?apiKey=${SPOONACULAR_API_KEY}&amount=${ingredientAmount}`);
-    const ingredientPrice = parseFloat((ingredientDetails.data.estimatedCost.value / 100).toFixed(2)); // prices are stored in cents, divide by 100 for dollars and cents
+    const ingredientDetails = await axios.get(`https://api.spoonacular.com/food/ingredients/${ingredientId}/information?apiKey=${SPOONACULAR_API_KEY}&amount=${ingredientAmount}&unit=${ingredientUnit}`);
+    var ingredientPrice = parseFloat((ingredientDetails.data.estimatedCost.value / 100).toFixed(2)); // prices are stored in cents, divide by 100 for dollars and cents
 
     // some ingredients can cost less than a cent if the amount is small enough
     // set the minimum price to 1 cent
@@ -198,7 +201,8 @@ app.post('/addToShoppingList', async (req, res) => {
         id: ingredientId,
         name: ingredientName,
         amount: ingredientAmount,
-        price: ingredientPrice
+        price: ingredientPrice,
+        unit: ingredientUnit
     };
 
     try {
@@ -652,10 +656,10 @@ app.get("/Home", async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
-app.get('/location', (req, res) => {
-    res.render('location');
-=======
+// <<<<<<< HEAD
+// app.get('/location', (req, res) => {
+//     res.render('location');
+// =======
 // Route to render the ingredients list page at /shoppingList
 app.get('/shoppingList', (req, res) => {
     res.render('ingredientsList');
@@ -664,7 +668,7 @@ app.get('/shoppingList', (req, res) => {
 // Route to render the settings page at /profile
 app.get('/profile', (req, res) => {
     res.render('profile');
->>>>>>> shoppingListAndSettings
+// >>>>>>> shoppingListAndSettings
 });
 
 // Route for handling 404 errors
