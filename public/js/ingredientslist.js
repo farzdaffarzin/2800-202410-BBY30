@@ -23,6 +23,9 @@ document.addEventListener("DOMContentLoaded", async function() {
             const listItem = document.createElement('li');
             listItem.setAttribute('data-id', ingredient.id);
             listItem.setAttribute('data-name', ingredient.name);
+            listItem.setAttribute('data-price', ingredient.price);
+            listItem.setAttribute('data-unit', ingredient.unit);
+            listItem.setAttribute('data-amount', ingredient.amount);
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -35,14 +38,28 @@ document.addEventListener("DOMContentLoaded", async function() {
             });
 
             const label = document.createElement('label');
-            label.textContent = ingredient.name;
-
-            listItem.appendChild(checkbox);
-            listItem.appendChild(label);
+            label.textContent = `${ingredient.amount} `;
+            if (ingredient.unit != null) {
+                label.textContent += `${ingredient.unit} of `;
+            }
+            label.textContent += ingredient.name;
+    
+            const price = document.createElement('span');
+            price.textContent = `$${ingredient.price.toFixed(2)}`;
+            price.classList.add('ingredient-price'); // Add a class for styling
+    
+            const leftContainer = document.createElement('div');
+            leftContainer.classList.add('left-container');
+            leftContainer.appendChild(checkbox);
+            leftContainer.appendChild(label);
+    
+            listItem.appendChild(leftContainer);
+            listItem.appendChild(price);
             ingredientsList.appendChild(listItem);
         });
     }
 
     const shoppingList = await fetchShoppingList();
+    console.log(shoppingList);
     renderShoppingList(shoppingList);
 });

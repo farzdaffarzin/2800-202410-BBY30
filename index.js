@@ -142,30 +142,32 @@ connectToDatabase().then(() => {
             );
             const recipeDetails = response.data;
 
-            const ingredients = recipeDetails.extendedIngredients;
-            const username = req.session.username;
-            const user = await userCollection.findOne(
-                { username: username },
-                { projection: { _id: 0, username: 0, password: 0, email: 0 } }
-            );
-
-            const fridgeData = user.fridge;
-            const shoppingListData = user.shoppingList;
-            const missingIngredients = [];
-            ingredients.forEach(element => {
-
-                // Check if the ingredient is in the user's fridge or shopping list
-                const existsInFridge = fridgeData.some(fridgeItem => fridgeItem.id === element.id);
-                const existsInShoppingList = shoppingListData.some(shoppingListItem => shoppingListItem.id == element.id);
-                if (!existsInFridge && !existsInShoppingList) {
-                    // Format of ingredients to push to shopping list
-                    missingIngredients.push({
-                        id: element.id,
-                        name: element.name,
-                        amount: element.amount
-                    });
-                }
-            });
+        const ingredients = recipeDetails.extendedIngredients;
+        console.log(ingredients);
+        const username = req.session.username;
+        const user = await userCollection.findOne(
+            { username: username },
+            { projection: { _id: 0, username: 0, password: 0, email: 0 } } 
+        );
+        
+        const fridgeData = user.fridge;
+        const shoppingListData = user.shoppingList;
+        const missingIngredients = [];
+        ingredients.forEach(element => {
+            
+            // Check if the ingredient is in the user's fridge or shopping list
+            const existsInFridge = fridgeData.some(fridgeItem => fridgeItem.id === element.id);
+            const existsInShoppingList = shoppingListData.some(shoppingListItem => shoppingListItem.id == element.id);
+            if (!existsInFridge && !existsInShoppingList) {
+                // Format of ingredients to push to shopping list
+                missingIngredients.push({ 
+                    id: element.id, 
+                    name: element.name,
+                    amount: element.amount,
+                    unit: element.unit
+                });
+            }
+        });
 
             res.render('recipe', { recipe: recipeDetails, missingIngredients: missingIngredients });
         } catch (error) {
@@ -194,15 +196,16 @@ connectToDatabase().then(() => {
         }
     });
 
-    // Route to add items to users' shopping list
-    app.post('/addToShoppingList', async (req, res) => {
-        console.log(req.body.ingredientId, req.body.ingredientName);
-        const ingredientId = parseInt(req.body.ingredientId, 10);
-        const ingredientName = req.body.ingredientName;
-        const ingredientAmount = parseFloat(req.body.ingredientAmount);
+// Route to add items to users' shopping list on ingredientslistpage.
+app.post('/addToShoppingList', async (req, res) => {
+    console.log(req.body.ingredientId, req.body.ingredientName, req.body.ingredientUnit);
+    const ingredientId = parseInt(req.body.ingredientId, 10);
+    const ingredientName = req.body.ingredientName;
+    const ingredientAmount = parseFloat(req.body.ingredientAmount);
+    const ingredientUnit = req.body.ingredientUnit;
 
-        const ingredientDetails = await axios.get(`https://api.spoonacular.com/food/ingredients/${ingredientId}/information?apiKey=${SPOONACULAR_API_KEY}&amount=${ingredientAmount}`);
-        const ingredientPrice = parseFloat((ingredientDetails.data.estimatedCost.value / 100).toFixed(2)); // prices are stored in cents, divide by 100 for dollars and cents
+    const ingredientDetails = await axios.get(`https://api.spoonacular.com/food/ingredients/${ingredientId}/information?apiKey=${SPOONACULAR_API_KEY}&amount=${ingredientAmount}&unit=${ingredientUnit}`);
+    var ingredientPrice = parseFloat((ingredientDetails.data.estimatedCost.value / 100).toFixed(2)); // prices are stored in cents, divide by 100 for dollars and cents
 
         // some ingredients can cost less than a cent if the amount is small enough
         // set the minimum price to 1 cent
@@ -218,12 +221,13 @@ connectToDatabase().then(() => {
             res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        const ingredient = {
-            id: ingredientId,
-            name: ingredientName,
-            amount: ingredientAmount,
-            price: ingredientPrice
-        };
+    const ingredient = {
+        id: ingredientId,
+        name: ingredientName,
+        amount: ingredientAmount,
+        price: ingredientPrice,
+        unit: ingredientUnit
+    };
 
         try {
             const result = await userCollection.updateOne(
