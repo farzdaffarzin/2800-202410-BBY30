@@ -25,7 +25,7 @@
     <h2>Missing Ingredients</h2>
     <ul id="missingIngredientsList">
         <% missingIngredients.forEach(element => { %>
-            <li data-id="<%= element.id %>" data-name="<%= element.name %>" data-amount="<%= element.amount %>">
+            <li data-id="<%= element.id %>" data-name="<%= element.name %>" data-amount="<%= element.amount %>" data-unit="<%= element.unit %>">
                 <%= element.name %>
             </li>
         <%});%>
