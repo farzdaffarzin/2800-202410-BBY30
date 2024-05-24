@@ -56,6 +56,15 @@ async function displayIngredients(results) {
                 "quantity": 1,
                 "unit": element.unit
             };
+            document.getElementById('modal').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('modal').classList.add('fade-out');
+                
+                setTimeout(() => {
+                    document.getElementById('modal').style.display = 'none';
+                    document.getElementById('modal').classList.remove('fade-out');
+                }, 1500);
+            }, 1000);
 
             try {
                 const response = await fetch('/insertIntoFridge', {
