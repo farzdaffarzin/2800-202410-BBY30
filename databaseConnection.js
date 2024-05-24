@@ -11,8 +11,15 @@ let client;
 
 async function connectToDatabase() {
     try {
-        client = await MongoClient.connect(atlasURI, { useNewUrlParser: true, useUnifiedTopology: true });
+        client = await MongoClient.connect(atlasURI);
         console.log("Connected to MongoDB Atlas");
+
+        const db = client.db(process.env.MONGODB_DATABASE);
+
+        // Await the connection to the sessions collection
+        const sessionsCollection = await db.collection("sessions");
+
+        return { client, sessionsCollection }; 
     } catch (error) {
         console.error("Error connecting to MongoDB Atlas:", error);
         throw error; // Rethrow the error to handle it in the calling code
