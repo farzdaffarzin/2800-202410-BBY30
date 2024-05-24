@@ -107,71 +107,6 @@ connectToDatabase().then(() => {
     }));
 
 
-    // // Access the users collection from the MongoDB database
-    // let userCollection; // Define a variable to store the user collection
-
-    // // Create a MongoDB session store
-    // let mongoStore;
-
-
-
-    // // Parse
-    // app.use(express.urlencoded({ extended: true }));
-    // app.use(express.static('public'));
-    // app.use(express.json());
-
-    // // Connect to the MongoDB Atlas cluster
-    // connectToDatabase().then(() => {
-    //     // Initialize the userCollection and mongoStore after connecting to the database
-    //     const client = getClient();
-    //     console.log(client);
-    //     const database = client.db(process.env.MONGODB_DATABASE);
-    //     userCollection = database.collection('users');
-    //     mongoStore = MongoStore.create({
-    //         client: client,
-    //         dbName: mongodb_database, // Specify database name
-    //         crypto: {
-    //             secret: mongodb_session_secret
-    //         }
-    //     });
-    //     mongoStore.on('create', (session) => {
-    //         console.log('Session created:', session);
-    //     });
-
-    //     mongoStore.on('update', (session) => {
-    //         console.log('Session updated:', session);
-    //     });
-
-    //     mongoStore.on('destroy', (session) => {
-    //         console.log('Session destroyed:', session);
-    //     });
-
-    //     mongoStore.on('error', (error) => {
-    //         console.error('MongoStore error:', error);
-    //     });
-    //     console.log('mongoStore initialized:', mongoStore);
-
-    //     // Start the server and listen on the specified port
-    //     app.listen(port, () => {
-    //         console.log(`Server is running on port ${port}`); // Log server start
-    //     });
-    // }).catch(error => {
-    //     console.error("Failed to connect to MongoDB Atlas:", error);
-    //     process.exit(1); // Exit the process with a non-zero exit code
-    // });
-
-    // // Use session middleware
-    // app.use(session({
-    //     secret: node_session_secret, // Secret for signing session ID cookies
-    //     store: mongoStore, // Store sessions in MongoDB
-    //     saveUninitialized: false, // Do not save uninitialized sessions
-    //     resave: false, // Resave session even if not modified
-    //     cookie: {
-    //         maxAge: expireTime
-    //     }
-    // }));
-
-
 
     // Set the view engine to EJS
     app.set('view engine', 'ejs');
@@ -183,12 +118,7 @@ connectToDatabase().then(() => {
     });
 
     app.get('/prompt', async (req, res) => {
-        // const fridgeData = [
-        //     { name: 'chicken', quantity: 2, unit: 'breasts' },
-        //     { name: 'broccoli', quantity: 1, unit: 'head' },
-        //     { name: 'rice', quantity: 1, unit: 'cup' },
-        //     // ... more ingredients
-        // ];
+
         const username = req.session.username;
 
         const user = await userCollection.findOne(
