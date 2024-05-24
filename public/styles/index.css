@@ -42,3 +42,14 @@ h1, h3 {
 .btn:hover {
     background-color: #7fa593; 
 }
+
+#easterEggVideo {
+    display: none;
+    position: absolute;
+    top: 42%; /* Aligning vertically in the middle */
+    left: 40%; /* Centering horizontally */
+    transform: translate(-50%, -120%); /* Adjusting position relative to center */
+    width: 100px; /* Width of the video */
+    height: 170px; /* Reduced height as requested */
+    z-index: 10; /* Ensure it's above other content */
+}
