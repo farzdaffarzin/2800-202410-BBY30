@@ -162,7 +162,7 @@ connectToDatabase().then(() => {
                 // Format of ingredients to push to shopping list
                 missingIngredients.push({ 
                     id: element.id, 
-                    name: element.name,
+                    name: element.original,
                     amount: element.amount,
                     unit: element.unit
                 });
