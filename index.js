@@ -652,10 +652,9 @@ app.get("/Home", async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
 app.get('/location', (req, res) => {
     res.render('location');
-=======
+});
 // Route to render the ingredients list page at /shoppingList
 app.get('/shoppingList', (req, res) => {
     res.render('ingredientsList');
@@ -664,7 +663,6 @@ app.get('/shoppingList', (req, res) => {
 // Route to render the settings page at /profile
 app.get('/profile', (req, res) => {
     res.render('profile');
->>>>>>> shoppingListAndSettings
 });
 
 // Route for handling 404 errors
