@@ -2,7 +2,25 @@
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+<style>
+    /* Added this style to ensure content is displayed below the fixed header */
+    #header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000; /* Ensures it stays on top */
+    
+    }
+
+    /* Add padding to the top of the body content to prevent overlap */
+    body {
+        padding-top: 70px; /* Adjust this value based on the height of your header */
+    }
+</style>
+
 <header id="header">
-    <span class="search-button"><h2>Home</h2></span>
-    <ion-icon class="bookmark-outline" size="large" name="bookmark-outline"></ion-icon>
+    <span class="search-button"><h2>PantryPals</h2></span>
     </header>
+
+

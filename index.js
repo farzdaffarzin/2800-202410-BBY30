@@ -170,7 +170,7 @@ app.post('/recipes', async (req, res) => {
     }
 });
 
-// Route to add items to users' shopping list
+// Route to add items to users' shopping list on ingredientslistpage.
 app.post('/addToShoppingList', async (req, res) => {
     console.log(req.body.ingredientId, req.body.ingredientName);
     const ingredientId = parseInt(req.body.ingredientId, 10);
@@ -215,6 +215,24 @@ app.post('/addToShoppingList', async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ success: false, message: 'An error occurred while adding the ingredient to the shopping list.' });
+    }
+});
+
+//Route to get items from shoppinglist array
+app.get('/getShoppingList', async (req, res) => {
+    const username = req.session.username;
+
+    try {
+        const user = await userCollection.findOne({ username: username });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        res.json({ success: true, shoppingList: user.shoppingList });
+    } catch (error) {
+        console.error('Error fetching shopping list:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while fetching the shopping list.' });
     }
 });
 
@@ -435,6 +453,43 @@ app.get('/login', (req, res) => {
     res.render('login'); // Render the login.ejs view
 });
 
+// Route to handle form submission on user profile page
+app.post('/settings', async (req, res) => {
+    try {
+        await connectToDatabase();
+        const client = getClient();
+        const db = client.db(process.env.MONGODB_DATABASE);
+        const collection = db.collection('settings');
+
+        const userSettings = {
+            username: req.body.username,
+            name: req.body.name,
+            email: req.body.email,
+            company: req.body.company,
+            password: req.body.newPassword, 
+            bio: req.body.bio,
+            birthday: req.body.birthday,
+            country: req.body.country,
+            phone: req.body.phone,
+            website: req.body.website,
+            notifications: {
+                comments: req.body.comments === 'on',
+                forum: req.body.forum === 'on',
+                follows: req.body.follows === 'on',
+                news: req.body.news === 'on',
+                updates: req.body.updates === 'on',
+                blog: req.body.blog === 'on'
+            }
+        };
+
+        await collection.insertOne(userSettings);
+        res.send('Settings saved successfully!');
+    } catch (error) {
+        console.error('Error saving settings:', error);
+        res.status(500).send('Error saving settings');
+    }
+});
+
 // Route to handle user login form submission
 app.post('/loggingin', async (req, res) => {
     var email = req.body.email;
@@ -597,8 +652,19 @@ app.get("/Home", async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
 app.get('/location', (req, res) => {
     res.render('location');
+=======
+// Route to render the ingredients list page at /shoppingList
+app.get('/shoppingList', (req, res) => {
+    res.render('ingredientsList');
+});
+
+// Route to render the settings page at /profile
+app.get('/profile', (req, res) => {
+    res.render('profile');
+>>>>>>> shoppingListAndSettings
 });
 
 // Route for handling 404 errors
