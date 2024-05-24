@@ -1,0 +1,55 @@
+body {
+    font-family: 'Verdana', sans-serif;
+    background-color: #bfd3b5;
+    margin: 0; 
+    padding: 0; 
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    min-height: 100vh;
+    width: 100vw;
+    overflow: hidden; 
+}
+
+/* Container styling */
+.container {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.8); 
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+    width: auto; 
+    max-width: 90%;
+}
+
+h1, h3 {
+    color: #506a5b; 
+}
+
+
+.btn {
+    background-color: #88ac99; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #7fa593; 
+}
+
+#easterEggVideo {
+    display: none;
+    position: absolute;
+    top: 42%; /* Aligning vertically in the middle */
+    left: 40%; /* Centering horizontally */
+    transform: translate(-50%, -120%); /* Adjusting position relative to center */
+    width: 100px; /* Width of the video */
+    height: 170px; /* Reduced height as requested */
+    z-index: 10; /* Ensure it's above other content */
+}

@@ -3,11 +3,34 @@
 <head>
     <title><%= recipe.title %></title>
     <%- include('templates/header') %> 
+    <style>
+        /* Basic styling for the difficulty rating */
+        .difficulty-rating {
+            display: flex; /* Arrange icons horizontally */
+        }
+
+        .difficulty-rating img {
+            width: 24px; /* Adjust the size as needed */
+            height: 24px;
+            margin-right: 5px; /* Add some space between icons */
+        }
+    </style>
 </head>
+
 <body>
     <h1><%= recipe.title %></h1>
+    <div class="difficulty-rating">
+        <% for (let i = 0; i < difficulty; i++) { %>
+            <img src="/images/chefhat.png" alt="Chef Hat Icon" />
+        <% } %>
+    </div>
     <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
 
+    <button type="button" id="saveButton-<%= recipe.id %>">
+        <% if (recipe.isSaved) { %>Remove from Favorites
+        <% } else { %>Save to Favorites<% } %>
+    </button>
+    
     <h2>Ingredients:</h2>
     <ul>
         <% recipe.extendedIngredients.forEach(ing => { %>
@@ -15,8 +38,25 @@
         <% }); %>
     </ul>
 
+    <h2>Missing Ingredients</h2>
+    <ul id="missingIngredientsList">
+        <% missingIngredients.forEach(element => { %>
+            <li data-id="<%= element.id %>" data-name="<%= element.name %>" data-amount="<%= element.amount %>" data-unit="<%= element.unit %>">
+                <%= element.amount %> <%= element.unit %> <%= element.name %> 
+            </li>
+        <%});%>
+    </ul>
+    
     <h2>Instructions:</h2>
     <div><%- recipe.instructions %></div> 
+
     <%- include('templates/footer') %> 
+    <script src="/recipeDisplay.js"></script> 
+    <script>
+        document.getElementById('saveButton-<%= recipe.id %>').addEventListener('click', () => {
+            toggleFavorite('<%= recipe.id %>');
+        });
+    </script>
+    <script src="../addToShoppingList.js"></script>
 </body>
 </html>

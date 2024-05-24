@@ -1,0 +1,30 @@
+/* General body styling */
+body {
+    background-color: #bfd3b5;
+    font-family: 'Verdana', sans-serif;
+    color: #353535;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    height: 100vh; 
+    margin: 0;
+    padding: 0; 
+}
+
+.container {
+    text-align: center;
+    padding: 40px;
+}
+
+h1, h2 {
+    font-weight: bold;
+}
+
+p {
+    font-size: 18px;
+}
+
+.bi-knife {
+    color: crimson;
+    margin-bottom: 20px;
+}

@@ -4,18 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <link rel="stylesheet" href="/styles/landingPage.css">
+    <title>Fridge</title>
+    <%- include('templates/header') %>  
     <script src="./fetchIngredients.js"></script>
     <script src="./fetchFridgeData.js"></script>
+    <%- include('templates/header') %>
     <style>
+
         body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
+            background-color: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)),
+        linear-gradient(to bottom, rgb(93, 141, 121), rgba(86, 182, 86, 0.527));
         }
 
         .container {
@@ -25,6 +26,7 @@
         }
 
         #search-item {
+            margin-top: 90px;
             width: calc(100% - 80px);
             padding: 8px;
             margin-right: 10px;
@@ -36,16 +38,19 @@
             padding: 8px;
             border: none;
             border-radius: 5px;
-            background-color: #00e335;
+            background-color:  rgb(93, 141, 121);
             color: #fff;
             cursor: pointer;
+            text-shadow: 1px 1px 4px black;
         }
         
         #search-button {
+            border-radius: 34;
             width: 40px;
         }
 
         #load-preset-button {
+            border-radius: 34;
             width: 175px;
         }
 
@@ -73,15 +78,89 @@
         #search-results-list li:hover {
             cursor: pointer;
         }
-        
+
+        #search-button:hover {
+    background-color: rgb(82, 83, 78);
+    }
+    
+    #load-preset-button:hover {
+    background-color: rgb(82, 83, 78);
+    }
+
+    h3 {
+        color: white; 
+        text-shadow: 2px 2px 4px black;
+    }
+        #reverse-search {
+            padding: 8px;
+            border: none;
+            border-radius: 12px;
+            background-color: rgb(93, 141, 121);
+            color: #fff;
+            cursor: pointer;
+            text-shadow: 1px 1px 4px black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+        }
+
+        #reverse-search:hover {
+            background-color: rgb(82, 83, 78);
+        }
+
+        #reverse-search > ion-icon {
+            font-size: 20px;
+        }
+
+        #search-options {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        .right-elements {
+            display: flex;
+            align-items: center;
+        }
+
+        #sorting {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            color: #333;
+            margin-left: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fefefe;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 60%;
+            max-width: 100px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            opacity: 1;
+            transition: opacity 1.5s ease;
+            text-align: center;
+        }
+
+        .fade-out {
+            opacity: 0;
+        }
     </style>
 </head>
 
 <body>
-    <header id="header">
-        <span class="search-button"><h2>Home</h2></span>
-        <ion-icon class="search-button md icon-large hydrated" size="large" name="search-outline" role="img"></ion-icon>
-    </header>
     
     <div class="container">
         <div id="mainDiv">
@@ -94,8 +173,22 @@
             <h3>Fridge</h3><button onclick="loadPresetFridge()" id="load-preset-button">Load Preset Fridge</button>
             <ul id="fridge-contents"></ul>
         </div>
+        <div id="modal" class="modal">
+            <p>Added to fridge</p>
+        </div>        
         <div id="search-results">
-            <h3>Search Results</h3>
+            <div id="search-options">
+                <h3>Search Results:</h3>
+                <div class="right-elements">
+                    <select name="sorting" id="sorting">
+                        <option value="alphabet">Alphabetical</option>
+                        <option value="calories">Calories</option>
+                    </select>
+                    <button id="reverse-search" onclick="reverseList()">
+                        <ion-icon name="swap-vertical-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
             <ul id="search-results-list">
                 <!-- empty, fill with ingredients -->
             </ul>

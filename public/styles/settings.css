@@ -1,8 +1,12 @@
-body{
-    background: #f5f5f5;
-    margin-top:20px;
+/* General body styling */
+body {
+    background-color: #bfd3b5; /* Changed to match the new background color */
+    font-family: 'Verdana', sans-serif; 
+    color: #353535;
+    margin-top: 70px; /* Adjust this if needed based on your header height */
 }
 
+/* Specific element styling */
 .ui-w-80 {
     width: 80px !important;
     height: auto;
@@ -46,7 +50,11 @@ label.btn {
 
 .card {
     background-clip: padding-box;
-    box-shadow: 0 1px 4px rgba(24,28,33,0.012);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    border-radius: 8px; /* Adding rounded corners */
+    background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)),
+        linear-gradient(to bottom, rgb(93, 141, 121), rgba(93, 141, 121, 0.753)); /* Updated background color */
+    color: #353535;
 }
 
 .row-bordered {
@@ -60,41 +68,89 @@ label.btn {
     height: 1px;
     opacity: 0;
 }
+
 .account-settings-links .list-group-item.active {
     font-weight: bold !important;
 }
+
 html:not(.dark-style) .account-settings-links .list-group-item.active {
     background: transparent !important;
 }
+
 .account-settings-multiselect ~ .select2-container {
     width: 100% !important;
 }
+
 .light-style .account-settings-links .list-group-item {
     padding: 0.85rem 1.5rem;
     border-color: rgba(24, 28, 33, 0.03) !important;
 }
+
 .light-style .account-settings-links .list-group-item.active {
     color: #4e5155 !important;
 }
+
 .material-style .account-settings-links .list-group-item {
     padding: 0.85rem 1.5rem;
     border-color: rgba(24, 28, 33, 0.03) !important;
 }
+
 .material-style .account-settings-links .list-group-item.active {
     color: #4e5155 !important;
 }
+
 .dark-style .account-settings-links .list-group-item {
     padding: 0.85rem 1.5rem;
     border-color: rgba(255, 255, 255, 0.03) !important;
 }
+
 .dark-style .account-settings-links .list-group-item.active {
     color: #fff !important;
 }
+
 .light-style .account-settings-links .list-group-item.active {
     color: #4E5155 !important;
 }
+
 .light-style .account-settings-links .list-group-item {
     padding: 0.85rem 1.5rem;
     border-color: rgba(24,28,33,0.03) !important;
 }
 
+/* New button styling */
+.btn-primary {
+    width: 100%;
+    background-color: #506a5b; 
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #ffffff; 
+}
+
+.btn-primary:hover {
+    background-color: #3d5145;
+}
+
+/* Form input styling */
+input[type="email"], input[type="password"], input[type="text"], select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px; 
+    border: 2px solid #7fa593; 
+    border-radius: 4px; 
+    box-sizing: border-box; 
+}
+
+/* Forgot password link */
+.forgot-password-link {
+    color: #161616;
+    display: block; 
+    text-align: center; 
+    margin-top: 15px; 
+}
+
+.forgot-password-link:hover {
+    text-decoration: underline; 
+}

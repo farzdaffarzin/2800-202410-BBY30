@@ -1,37 +1,106 @@
-<!----------------------------------------------------------->
-<!---The Navbar Of Our Application, Can Still Revise It ----->
-<!----------------------------------------------------------->
 <!DOCTYPE html>
-<link rel="stylesheet" href="/styles/landingPage.css">
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
     <%- include('templates/header') %> 
+    <style>
+        body {
+            padding-top: 70px; /* Adjust this value based on the height of your header */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            flex: 1;
+        }
+        .recipe-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px; /* Add space between grid items */
+        }
+        .recipe-card {
+            flex: 1 1 calc(33.333% - 20px); /* Adjust the width of the grid items */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #7fa593; 
+            display: flex;
+            flex-direction: column;
+        }
+        .recipe-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .recipe-card-body {
+            padding: 15px;
+            flex-grow: 1;
+        }
+        .recipe-card-body p {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Number of lines to show */
+            -webkit-box-orient: vertical;
+        }
+
+        /* Media queries for responsiveness */
+        @media (max-width: 768px) {
+            .recipe-card {
+                flex: 1 1 100%; /* Make each card take full width */
+            }
+        }
+        footer {
+            padding: 10px 20px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <header id="header">
-        <span class = "search-button"><h2>Home</h2></span>
-        <ion-icon class = "search-button" size="large" name="search-outline"></ion-icon>
-    </header>
-</body>
-</html>
 
 <!--------------------------------------------------------->
 <!-- Our Pages Content Should Be Entered Below This Line -->
 <!--------------------------------------------------------->
 
-
-
-
-
-
-
-
-
+<div class="container">
+    <h1 class="mt-4">Saved Recipes</h1>
+    <div class="recipe-grid" id="recipe-grid">
+        <!-- Example static images -->
+        <div class="recipe-card">
+            <img src="/images/food1.jpg" alt="Food 1">
+            <div class="recipe-card-body">
+                <h5>Pancakes</h5>
+                <p>Steps on how to make pancakes go here. <a href="#">Click here for full instructions</a></p>
+            </div>
+        </div>
+        <div class="recipe-card">
+            <img src="/images/food2.jpg" alt="Food 2">
+            <div class="recipe-card-body">
+                <h5>Prime Rib Burger</h5>
+                <p>Steps on how to make a prime rib burger go here. <a href="#">Click here for full instructions</a></p>
+            </div>
+        </div>
+        <div class="recipe-card">
+            <img src="/images/food3.jpg" alt="Food 3">
+            <div class="recipe-card-body">
+                <h5>Couscous Spring Salad</h5>
+                <p>Steps on how to make a couscous spring salad go here. <a href="#">Click here for full instructions</a></p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-------------------------------------->
 <!-- Our Custom Footer Containg Icons -->
 <!-------------------------------------->
-<body>
-    <%- include('templates/footer') %> 
+<%- include('templates/footer') %> 
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+</html>

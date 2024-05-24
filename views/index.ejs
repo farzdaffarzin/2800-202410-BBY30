@@ -4,60 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pantry-Pal</title>
-    <style>
-        body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #f8f9fa;
-    font-family: Arial, sans-serif;
-}
-
-.container {
-    text-align: center;
-}
-
-h1 {
-    font-size: 2.5em;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-h3 {
-    font-size: 1.5em;
-    color: #555;
-    margin-bottom: 10px;
-}
-
-.btn {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px;
-    font-size: 1em;
-    color: #000000;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.btn:hover {
-    background-color: #0056b3;
-}
-
-    </style>
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to Pantry-Pal</h1>
+        <h1 id="welcome"><span id="easterEggTrigger">Welcome</span> to Pantry-Pal</h1>
         <h3>First time?</h3>
         <a href="/signup"><button class="btn">Sign up</button></a>
         <h3>Already have an account?</h3>
         <a href="/login"><button class="btn">Login</button></a>
         
+        <!-- Video element (hidden initially) -->
+        <video id="easterEggVideo" style="display: none;" width="640" height="480" controls>
+            <source src="/video/gordon1.mp4" type="video/mp4">
+        </video>
     </div>
+
+    <script>
+        let clickCount = 0;
+        document.getElementById('easterEggTrigger').addEventListener('click', function() {
+            clickCount++;
+            if (clickCount === 3) {
+                document.getElementById('easterEggVideo').style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
