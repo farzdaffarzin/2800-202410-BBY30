@@ -605,12 +605,12 @@ app.post('/addToShoppingList', async (req, res) => {
         });
 
         if (!user) {
-            return res.status(400).send('Invalid or expired token.');
+            return res.status(400).render('reset-password-fail');
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
         await userCollection.updateOne({ _id: user._id }, { $set: { password: hashedPassword, resetToken: null, resetTokenExpires: null } });
-        res.send('Your password has been updated. <a href="/login">back to Login</a>');
+        res.render('reset-password-success');
     });
 
 
