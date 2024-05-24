@@ -13,7 +13,7 @@ const nodemailer = require('nodemailer');// Email sending
 
 
 const { MongoClient, ObjectId } = require('mongodb');
-const { getRecipesByIngredients } = require('./recipeGen'); // Import functions
+const { getRecipesByIngredients, fetchRecipeDetails, calculateDifficulty,getMissingIngredientsForRecipe} = require('./recipeGen'); // Import functions
 const { ingredientSearch } = require('./ingredientApiSearch.js');
 const { connectToDatabase, getClient } = require('./databaseConnection');
 const User = require('./userModel.js');
@@ -136,53 +136,66 @@ connectToDatabase().then(() => {
     app.get('/recipe/:id', async (req, res) => {
         try {
             const recipeId = req.params.id;
-            const userId = req.session.userId;
-            const response = await axios.get(
-                `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}&includeNutrition=false`
-            );
+
+            // Fetch the recipe details from Spoonacular
+            const response = await axios.get(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}&includeNutrition=false`);
             const recipeDetails = response.data;
+            console.log("Recipe Details:", recipeDetails);
 
-        const ingredients = recipeDetails.extendedIngredients;
-        console.log(ingredients);
-        const username = req.session.username;
-        const user = await userCollection.findOne(
-            { username: username },
-            { projection: { _id: 0, username: 0, password: 0, email: 0 } } 
-        );
-        
-        const fridgeData = user.fridge;
-        const shoppingListData = user.shoppingList;
-        const missingIngredients = [];
-        ingredients.forEach(element => {
-            
-            // Check if the ingredient is in the user's fridge or shopping list
-            const existsInFridge = fridgeData.some(fridgeItem => fridgeItem.id === element.id);
-            const existsInShoppingList = shoppingListData.some(shoppingListItem => shoppingListItem.id == element.id);
-            if (!existsInFridge && !existsInShoppingList) {
-                // Format of ingredients to push to shopping list
-                missingIngredients.push({ 
-                    id: element.id, 
-                    name: element.name,
-                    amount: element.amount,
-                    unit: element.unit
-                });
+            // Fetch user data
+            let username;
+            let fridgeData = [];
+            let shoppingListData = [];
+
+            if (req.session && req.session.userId) {
+                username = req.session.username;
+                const user = await userCollection.findOne(
+                    { username: username },
+                    { projection: { _id: 0, username: 0, password: 0, email: 0 } }
+                );
+                if (user) {
+                    fridgeData = user.fridge || [];
+                    shoppingListData = user.shoppingList || [];
+                } else {
+                    console.error("User not found.");
+                }
+            } else {
+                console.warn("User not logged in.");
             }
-        });
 
-            res.render('recipe', { recipe: recipeDetails, missingIngredients: missingIngredients });
+            // Find missing ingredients
+            const missingIngredients = await getMissingIngredientsForRecipe(
+                recipeId,
+                username,
+                fridgeData,
+                shoppingListData
+            );
+
+            // Calculate difficulty rating 
+            const steps = recipeDetails.analyzedInstructions?.[0]?.steps?.length || 0;
+            const difficulty = calculateDifficulty(
+                steps,
+                recipeDetails.extendedIngredients.length,
+                recipeDetails.readyInMinutes
+            );
+
+            // Render the recipe page
+            res.render('recipe', {
+                recipe: recipeDetails,
+                missingIngredients: missingIngredients,
+                difficulty: difficulty
+            });
         } catch (error) {
             console.error("Error fetching recipe details:", error);
-            res.status(500).json({ error: 'Failed to fetch recipe details' });
+            res.status(500).json({ error: 'Failed to fetch recipe details' }); // Send JSON error response instead of alert
         }
     });
-
     // Route to handle recipe search by ingredients
     app.post('/recipes', async (req, res) => {
         try {
             const ingredients = req.body.ingredients || ['chicken', 'broccoli', 'rice']; // Default ingredients if none provided
             const cuisine = req.body.cuisine;
             const recipes = await getRecipesByIngredients(ingredients, cuisine); // Pass axios instance
-            // (Optional) Store recipes in MongoDB if needed...
             res.json(recipes);
         } catch (error) {
             // Error handling for different cases:
@@ -196,16 +209,16 @@ connectToDatabase().then(() => {
         }
     });
 
-// Route to add items to users' shopping list on ingredientslistpage.
-app.post('/addToShoppingList', async (req, res) => {
-    console.log(req.body.ingredientId, req.body.ingredientName, req.body.ingredientUnit);
-    const ingredientId = parseInt(req.body.ingredientId, 10);
-    const ingredientName = req.body.ingredientName;
-    const ingredientAmount = parseFloat(req.body.ingredientAmount);
-    const ingredientUnit = req.body.ingredientUnit;
+    // Route to add items to users' shopping list on ingredientslistpage.
+    app.post('/addToShoppingList', async (req, res) => {
+        console.log(req.body.ingredientId, req.body.ingredientName, req.body.ingredientUnit);
+        const ingredientId = parseInt(req.body.ingredientId, 10);
+        const ingredientName = req.body.ingredientName;
+        const ingredientAmount = parseFloat(req.body.ingredientAmount);
+        const ingredientUnit = req.body.ingredientUnit;
 
-    const ingredientDetails = await axios.get(`https://api.spoonacular.com/food/ingredients/${ingredientId}/information?apiKey=${SPOONACULAR_API_KEY}&amount=${ingredientAmount}&unit=${ingredientUnit}`);
-    var ingredientPrice = parseFloat((ingredientDetails.data.estimatedCost.value / 100).toFixed(2)); // prices are stored in cents, divide by 100 for dollars and cents
+        const ingredientDetails = await axios.get(`https://api.spoonacular.com/food/ingredients/${ingredientId}/information?apiKey=${SPOONACULAR_API_KEY}&amount=${ingredientAmount}&unit=${ingredientUnit}`);
+        var ingredientPrice = parseFloat((ingredientDetails.data.estimatedCost.value / 100).toFixed(2)); // prices are stored in cents, divide by 100 for dollars and cents
 
         // some ingredients can cost less than a cent if the amount is small enough
         // set the minimum price to 1 cent
@@ -221,13 +234,13 @@ app.post('/addToShoppingList', async (req, res) => {
             res.status(404).json({ success: false, message: 'User not found' });
         }
 
-    const ingredient = {
-        id: ingredientId,
-        name: ingredientName,
-        amount: ingredientAmount,
-        price: ingredientPrice,
-        unit: ingredientUnit
-    };
+        const ingredient = {
+            id: ingredientId,
+            name: ingredientName,
+            amount: ingredientAmount,
+            price: ingredientPrice,
+            unit: ingredientUnit
+        };
 
         try {
             const result = await userCollection.updateOne(

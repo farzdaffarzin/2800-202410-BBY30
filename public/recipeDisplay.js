@@ -1,3 +1,7 @@
+
+
+
+
 async function fetchRecipes() {
     const ingredientsInput = document.getElementById('ingredients').value;
     const ingredients = ingredientsInput.split(',').map(ing => ing.trim());
@@ -117,12 +121,13 @@ async function displayRecipes(recipes) {
     }
 
     const isPromptPage = window.location.pathname === '/prompt';
-    const savedRecipeIds = isPromptPage ? [] : await getSavedRecipes(); 
+    const savedRecipeIds = isPromptPage ? [] : await getSavedRecipes();
 
     recipes.forEach(recipe => {
         const listItem = document.createElement('li');
         const titleLink = document.createElement('a');
         titleLink.textContent = recipe.title;
+        titleLink.href = `/recipe/${recipe.id}`; // Use a regular link to navigate
         titleLink.classList.add('recipe-title');
         titleLink.dataset.recipeId = recipe.id;
         listItem.appendChild(titleLink);
@@ -143,29 +148,13 @@ async function displayRecipes(recipes) {
         const target = event.target;
         if (target.classList.contains('recipe-title')) {
             const recipeId = target.dataset.recipeId;
-            fetchRecipeDetails(recipeId); 
+            fetchRecipeDetails(recipeId);
         }
     });
 }
 
 
-async function fetchRecipeDetails(recipeId) {
-    try {
-        // Redirect to the recipe details page (using JavaScript's window.location)
-        window.location.href = `/recipe/${recipeId}`;
-    } catch (error) {
-        console.error("Error fetching recipe details:", error);
-        // Handle the error, e.g., display an error message to the user
-    }
-}
 
-// async function checkIfRecipeIsSaved(recipeId) {
-//   // Fetch saved recipes for the logged-in user
-//   const savedRecipeIds = /* your logic to fetch saved recipe IDs */; 
-
-//   // Check if the current recipe ID is in the list of saved recipes
-//   return savedRecipeIds.includes(recipeId);
-// }
 
 async function toggleFavorite(recipeId) {
     console.log("Toggling favorite for recipe ID:", recipeId); // Add recipe ID to console log
@@ -237,6 +226,8 @@ async function getSavedRecipes() {
         return []; // Return an empty array in case of an error
     }
 }
+
+
 
 
 
