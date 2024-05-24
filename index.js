@@ -175,10 +175,17 @@ app.post('/addToShoppingList', async (req, res) => {
     console.log(req.body.ingredientId, req.body.ingredientName);
     const ingredientId = parseInt(req.body.ingredientId, 10);
     const ingredientName = req.body.ingredientName;
-    const ingredientAmount = req.body.ingredientAmount;
+    const ingredientAmount = parseFloat(req.body.ingredientAmount);
 
     const ingredientDetails = await axios.get(`https://api.spoonacular.com/food/ingredients/${ingredientId}/information?apiKey=${SPOONACULAR_API_KEY}&amount=${ingredientAmount}`);
-    const ingredientPrice = (ingredientDetails.data.estimatedCost.value / 100).toFixed(2); // prices are stored in cents, divide by 100 for dollars and cents
+    const ingredientPrice = parseFloat((ingredientDetails.data.estimatedCost.value / 100).toFixed(2)); // prices are stored in cents, divide by 100 for dollars and cents
+
+    // some ingredients can cost less than a cent if the amount is small enough
+    // set the minimum price to 1 cent
+    if (ingredientPrice < 0.01) {
+        ingredientPrice = 0.01;
+    }
+
     const username = req.session.username;
 
     const user = await userCollection.findOne({ username: username });
@@ -330,6 +337,7 @@ app.post('/ingredients', async (req, res) => {
     try {
         // Extract ingredient to search from request body
         const ingredientToSearch = req.body.ingredient;
+        const sorting = req.body.sorting;
         if (!ingredientToSearch) {
             // Return error response if ingredient is not provided
             res.status(400).json({ error: 'Ingredient not provided in the request' });
@@ -337,7 +345,7 @@ app.post('/ingredients', async (req, res) => {
         }
 
         // Search for ingredients using Spoonacular API
-        const results = await ingredientSearch(ingredientToSearch, "calories");
+        const results = await ingredientSearch(ingredientToSearch, sorting);
         res.json(results); // Return search results
     } catch (err) {
         // Handle errors if ingredient search fails

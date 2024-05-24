@@ -1,8 +1,10 @@
 async function fetchIngredients() {
     const searchInput = document.getElementById('search-item').value;
+    const sortingOption = document.querySelector('#search-options select').value;
 
     const formattedSearch = {
-        ingredient: searchInput
+        ingredient: searchInput,
+        sorting: sortingOption
     };
 
     try {
@@ -100,4 +102,14 @@ function createFridgeItem(item) {
     itemToAdd.innerHTML = `${capitalizeFirstLetter(item.name)}, ${item.quantity}`;
     itemToAdd.id = item.id;
     return itemToAdd;
+}
+
+function reverseList() {
+    const ingredientList = document.getElementById('search-results-list');
+    const items = Array.from(ingredientList.children);
+    ingredientList.innerHTML = ''; 
+
+    items.reverse().forEach(item => {
+        ingredientList.appendChild(item);
+    });
 }
