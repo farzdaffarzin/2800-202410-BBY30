@@ -5,10 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <link rel="stylesheet" href="/styles/landingPage.css">
+    <%- include('templates/header') %>  
     <script src="./fetchIngredients.js"></script>
     <script src="./fetchFridgeData.js"></script>
     <style>
@@ -162,12 +159,7 @@
     </style>
 </head>
 
-<body>
-    <header id="header">
-        <span class="search-button"><h2>Home</h2></span>
-        <ion-icon class="bookmark-outline" size="large" name="bookmark-outline"></ion-icon>
-    </header>
-    
+<body>  
     <div class="container">
         <div id="mainDiv">
             <input type="text" id="search-item" placeholder="Search item..." />
