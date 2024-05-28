@@ -3,11 +3,14 @@ body {
     margin: 0;
     padding: 0;
     background-color: #83aa7083;
-    padding-top: 60px;
+    padding-top: 80px;
     padding-bottom: 60px; /* Match the footer height */
     min-height: calc(100vh - 100px); /* 100vh - header & footer heights */
 
 }
+
+
+
 
 
 #header {
@@ -61,16 +64,18 @@ a {
     color: rgb(255, 251, 0);
 }
 
-/* Basic styling for the difficulty rating */
 .difficulty-rating {
     display: flex;
-    /* Arrange icons horizontally */
+    /* align-items: center; 
+    justify-content: center; */
+    margin-top: 20px;   /* Add space above the rating */
+    font-size: 18px;    /* Increase font size for better readability */
+    font-weight: bold; 
 }
 
 .difficulty-rating img {
-    width: 24px;
-    /* Adjust the size as needed */
-    height: 24px;
+    width: 30px;        /* Make icons slightly larger */
+    height: 30px;
     margin-right: 5px;
-    /* Add some space between icons */
+    margin-bottom: -1px;
 }

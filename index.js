@@ -140,7 +140,6 @@ connectToDatabase().then(() => {
             // Fetch the recipe details from Spoonacular
             const response = await axios.get(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}&includeNutrition=false`);
             const recipeDetails = response.data;
-            console.log("Recipe Details:", recipeDetails);
 
             // Fetch user data
             let username;
@@ -172,7 +171,12 @@ connectToDatabase().then(() => {
             );
 
             // Calculate difficulty rating 
-            const steps = recipeDetails.analyzedInstructions?.[0]?.steps?.length || 0;
+            const steps = recipeDetails.analyzedInstructions.reduce((totalSteps, instruction) => {
+                return totalSteps + (instruction.steps ? instruction.steps.length : 0);
+              }, 0); 
+            console.log("steps:", steps);
+            console.log("ingredients:", recipeDetails.extendedIngredients.length);
+            console.log("time:", recipeDetails.readyInMinutes);
             const difficulty = calculateDifficulty(
                 steps,
                 recipeDetails.extendedIngredients.length,

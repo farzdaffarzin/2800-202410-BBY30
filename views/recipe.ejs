@@ -9,7 +9,9 @@
 
     <header id="header">
         <span class="search-button">
-            <h2><%= recipe.title %></h2>
+            <h2>
+                <%= recipe.title %>
+            </h2>
         </span>
         <button type="button" id="saveButton-<%= recipe.id %>">
             <% if (recipe.isSaved) { %>Remove from Favorites
@@ -19,12 +21,14 @@
 </head>
 
 <body>
+    <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
     <div class="difficulty-rating">
+        Difficulty:
         <% for (let i=0; i < difficulty; i++) { %>
             <img src="/images/chefhat.png" alt="Chef Hat Icon" />
             <% } %>
+                <span class="rating-label"> (<%= difficulty %> / 3)</span>
     </div>
-    <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
 
 
     <h2>Ingredients:</h2>
