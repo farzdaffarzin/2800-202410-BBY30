@@ -115,10 +115,10 @@ async function getRecipesByIngredients(ingredients, cuisine, axiosInstance = axi
 function calculateDifficulty(steps, ingredients, cookTime) {
     let difficulty = 1; // Start with base difficulty of 1 (easy)
 
-    if (steps > 10) {
+    if (steps > 5) {
         difficulty++; // Increase difficulty if steps exceed 10
     }
-    if (ingredients > 8) {
+    if (ingredients > 5) {
         difficulty++; // Increase difficulty if ingredients exceed 8
     }
     if (cookTime > 45) {
