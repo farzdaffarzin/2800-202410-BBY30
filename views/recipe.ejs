@@ -14,6 +14,24 @@
             height: 24px;
             margin-right: 5px; /* Add some space between icons */
         }
+
+        button {
+            /* Style for buttons */
+            background-color: rgb(93, 141, 121);
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: rgb(82, 83, 78);
+        }
+        .missing {
+            list-style: none;
+            padding-left: 0; 
+        }
     </style>
 </head>
 
@@ -38,11 +56,11 @@
         <% }); %>
     </ul>
 
-    <h2>Missing Ingredients</h2>
+    <h2>Missing Ingredients:</h2>
     <ul id="missingIngredientsList">
         <% missingIngredients.forEach(element => { %>
-            <li data-id="<%= element.id %>" data-name="<%= element.name %>" data-amount="<%= element.amount %>" data-unit="<%= element.unit %>">
-                <%= element.amount %> <%= element.unit %> <%= element.name %> 
+            <li class="missing" data-id="<%= element.id %>" data-name="<%= element.name %>" data-amount="<%= element.amount %>" data-unit="<%= element.unit %>">
+                <button class="add-button">Add</button> <%= element.name %>
             </li>
         <%});%>
     </ul>

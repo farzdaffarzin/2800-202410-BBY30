@@ -276,6 +276,32 @@ connectToDatabase().then(() => {
         }
     });
 
+    app.post('/delete-ingredients', async (req, res) => {
+        const ids = req.body.ids;
+        const idsAsIntegers = ids.map(id => parseInt(id, 10));
+        console.log(ids);
+        const username = req.session.username;
+        const user = await userCollection.findOne({ username: username });
+        console.log('bbbbb');
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        console.log('ccccc');
+        console.log(user)
+        try {
+            const result = await userCollection.findOneAndUpdate(
+                { username: username }, 
+                { $pull: { shoppingList: { id: { $in: idsAsIntegers } } } }, 
+                { new: true } 
+            );
+            console.log(result);
+            console.log(await userCollection.findOne({username: username}));
+            res.json({ success: true });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, error: 'Internal server error' });
+        }
+    });
 
     // Route to handle saving a recipe
     app.post('/save-recipe', async (req, res) => {

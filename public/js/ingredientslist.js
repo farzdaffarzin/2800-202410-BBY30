@@ -1,3 +1,5 @@
+var itemsToDelete = [];
+
 document.addEventListener("DOMContentLoaded", async function() {
     async function fetchShoppingList() {
         try {
@@ -32,8 +34,17 @@ document.addEventListener("DOMContentLoaded", async function() {
             checkbox.addEventListener('change', function() {
                 if (this.checked) {
                     listItem.classList.add('strikethrough');
+                    if (!itemsToDelete.includes(ingredient.id)) {
+                        console.log(`added ${ingredient.name}`);
+                        itemsToDelete.push(ingredient.id);
+                    }
                 } else {
                     listItem.classList.remove('strikethrough');
+                    const index = itemsToDelete.indexOf(ingredient.id);
+                    if (index > -1) {
+                        console.log(`removed ${ingredient.name}`);
+                        itemsToDelete.splice(index, 1);
+                    }
                 }
             });
 
@@ -58,4 +69,34 @@ document.addEventListener("DOMContentLoaded", async function() {
     const shoppingList = await fetchShoppingList();
     console.log(shoppingList);
     renderShoppingList(shoppingList);
+
+    document.getElementById('delete-checked-items').addEventListener('click', async () => {
+        console.log('aaaa');
+        const checkedItems = document.querySelectorAll('#ingredients-list input[type="checkbox"]:checked');
+        const idsToDelete = Array.from(checkedItems).map(item => item.closest('li').getAttribute('data-id'));
+        
+        if (idsToDelete.length > 0) {
+            try {
+                const response = await fetch('/delete-ingredients', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ids: idsToDelete })
+                });
+    
+                if (response.ok) {
+                    idsToDelete.forEach(id => {
+                        const listItem = document.querySelector(`#ingredients-list li[data-id="${id}"]`);
+                        if (listItem) 
+                            listItem.remove();
+                    });
+                } else {
+                    console.error('Failed to delete ingredients');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    });
 });
