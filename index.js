@@ -76,24 +76,24 @@ connectToDatabase().then(() => {
         }
     });
 
-    // Log MongoStore events
-    mongoStore.on('create', (session) => {
-        console.log('Session created:', session);
-    });
+    // debugging output for database
+    // mongoStore.on('create', (session) => {
+    //     console.log('Session created:', session);
+    // });
 
-    mongoStore.on('update', (session) => {
-        console.log('Session updated:', session);
-    });
+    // mongoStore.on('update', (session) => {
+    //     console.log('Session updated:', session);
+    // });
 
-    mongoStore.on('destroy', (session) => {
-        console.log('Session destroyed:', session);
-    });
+    // mongoStore.on('destroy', (session) => {
+    //     console.log('Session destroyed:', session);
+    // });
 
-    mongoStore.on('error', (error) => {
-        console.error('MongoStore error:', error);
-    });
+    // mongoStore.on('error', (error) => {
+    //     console.error('MongoStore error:', error);
+    // });
 
-    console.log('mongoStore initialized:', mongoStore);
+    // console.log('mongoStore initialized:', mongoStore);
 
     // Use session middleware
     app.use(session({
@@ -140,7 +140,6 @@ connectToDatabase().then(() => {
             // Fetch the recipe details from Spoonacular
             const response = await axios.get(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}&includeNutrition=false`);
             const recipeDetails = response.data;
-            console.log("Recipe Details:", recipeDetails);
 
             // Fetch user data
             let username;
@@ -172,7 +171,10 @@ connectToDatabase().then(() => {
             );
 
             // Calculate difficulty rating 
-            const steps = recipeDetails.analyzedInstructions?.[0]?.steps?.length || 0;
+            const steps = recipeDetails.analyzedInstructions.reduce((totalSteps, instruction) => {
+                return totalSteps + (instruction.steps ? instruction.steps.length : 0);
+              }, 0); 
+
             const difficulty = calculateDifficulty(
                 steps,
                 recipeDetails.extendedIngredients.length,

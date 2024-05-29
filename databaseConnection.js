@@ -12,7 +12,6 @@ let client;
 async function connectToDatabase() {
     try {
         client = await MongoClient.connect(atlasURI);
-        console.log("Connected to MongoDB Atlas");
 
         const db = client.db(process.env.MONGODB_DATABASE);
 
