@@ -2,37 +2,37 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/landingPage.css">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
 
     <header id="header">
-        <span class="search-button">
-            <h2>
+        <div class="header-content">
+            <h2 id="recipe-title">
                 <%= recipe.title %>
             </h2>
-        </span>
-        <button type="button" id="saveButton-<%= recipe.id %>">
-            <% if (recipe.isSaved) { %>Remove from Favorites
-                <% } else { %>Save to Favorites<% } %>
-        </button>
+
+            <button type="button" id="saveButton-<%= recipe.id %>">
+                <% if (recipe.isSaved) { %>Remove from Favorites
+                    <% } else { %>Save to Favorites<% } %>
+            </button>
+        </div>
     </header>
     <style>
+
+
         .difficulty-rating {
             display: flex;
-            /* align-items: center; 
-    justify-content: center; */
             margin-top: 20px;
-            /* Add space above the rating */
             font-size: 18px;
-            /* Increase font size for better readability */
             font-weight: bold;
         }
 
         .difficulty-rating img {
             width: 30px;
-            /* Make icons slightly larger */
             height: 30px;
             margin-right: 5px;
             margin-bottom: -1px;
@@ -42,7 +42,7 @@
 
 <body>
     <div class="container">
-        <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
+        <img id="recipe-image" src="<%= recipe.image %>" alt="<%= recipe.title %>">
         <div class="difficulty-rating">
             Difficulty:
             <% for (let i=0; i < difficulty; i++) { %>
@@ -50,7 +50,6 @@
                 <% } %>
                     <span class="rating-label"> (<%= difficulty %> / 3)</span>
         </div>
-
 
         <h2>Ingredients:</h2>
         <ul>
@@ -69,13 +68,14 @@
                     <button class="add-button">Add</button>
                     <%= element.name %>
                 </li>
-                <%});%>
+                <% }); %>
         </ul>
 
         <h2>Instructions:</h2>
         <div><%- recipe.instructions %></div>
     </div>
     <%- include('templates/footer') %>
+
         <script src="/recipeDisplay.js"></script>
         <script>
             document.getElementById('saveButton-<%= recipe.id %>').addEventListener('click', () => {
