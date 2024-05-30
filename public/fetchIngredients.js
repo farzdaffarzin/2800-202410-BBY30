@@ -45,6 +45,12 @@ async function displayIngredients(results) {
     // Clear previous ingredient search results
     ingredientList.innerHTML = '';
 
+    if (results.length < 1) {
+        let foundIngredient = document.createElement('li');
+        foundIngredient.innerHTML = "No ingredients found.";
+        ingredientList.appendChild(foundIngredient);
+    }
+
     results.forEach(element => {
         let foundIngredient = document.createElement('li');
         foundIngredient.innerHTML = `${capitalizeFirstLetter(element.name)}`;

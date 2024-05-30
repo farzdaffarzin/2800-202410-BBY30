@@ -26,7 +26,7 @@ async function getRecipesByIngredients(ingredients, cuisine, axiosInstance = axi
     try {
       let url;
   
-      if (ingredients.length > 1) {
+      if (ingredients.length > 0) {
         // Use findByIngredients for multiple ingredients
         if (cuisine === "any" || cuisine == null) {
           url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${SPOONACULAR_API_KEY}&ingredients=${ingredients.join(',')}&ranking=2`;
