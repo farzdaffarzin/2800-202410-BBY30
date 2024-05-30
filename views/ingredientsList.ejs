@@ -1,76 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Ingredients List">
+
     <title>Ingredients List</title>
-    <link rel="stylesheet" href="/styles/ingredientslist.css"> 
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Include the header -->
     <%- include('templates/header') %>
-    <style>
-        body {
-            margin-top: 100px; 
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }   
-
-        h2 {
-            font-size: 24px;
-            color: white; 
-        }
-
-        h3 {
-            font-size: 18px;
-            color: white; 
-        }
-        
-        .ingredient-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-        }
-
-        .left-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .left-container label {
-            margin-left: 8px;
-        }
-
-        .ingredient-price {
-            margin-left: auto;
-            font-weight: bold;
-        }
-
-        .strikethrough {
-            text-decoration: line-through;
-            color: grey;
-        }
-    </style>
+            <h2>Shopping List</h2>
+        </div>
+        </span>
+        </header>
 </head>
 
 <body>
     <div class="container">
-        <h1>Shopping List</h1>
         <ul id="ingredients-list">
             <!-- The shopping list dynamically generated here -->
         </ul>
-        <button id="delete-checked-items" class="btn btn-danger mt-3">Delete Checked Items</button>
+        <button id="delete-checked-items">Delete Checked Items</button>
     </div>
-    
+
     <!-- Include the footer -->
     <%- include('templates/footer') %>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="/js/ingredientslist.js"></script>
+        <!-- JavaScript dependencies -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="/js/ingredientslist.js"></script>
 </body>
+
 </html>

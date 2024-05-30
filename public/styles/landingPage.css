@@ -3,10 +3,9 @@ body {
     margin: 0;
     padding: 0;
     background-color: #83aa7083;
-    padding-top: 80px;
-    padding-bottom: 60px; /* Match the footer height */
-    min-height: calc(100vh - 100px); /* 100vh - header & footer heights */
-
+    min-height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
 }
 
 button {
@@ -21,7 +20,7 @@ button {
 }
 
 button:hover {
-background-color: rgb(82, 83, 78);
+    background-color: rgb(82, 83, 78);
 }
 
 
@@ -35,14 +34,79 @@ background-color: rgb(82, 83, 78);
     color: white;
     text-align: center;
     padding: 10px 20px;
-    /* Adjust padding as needed */
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    /* Ensure header is on top */
 }
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.container {
+    flex: 1;
+    padding-bottom: 60px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 80px;
+}
+
+
+
+/* Shopping list elements */
+.strikethrough label {
+    text-decoration: line-through;
+    color: #777;
+}
+
+label {
+    margin-left: 10px;
+}
+
+#ingredients-list,
+#recipeList,
+#fridgeList {
+    list-style-type: none;
+    padding: 0;
+    font-size: 15pt;
+}
+#ingredients-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0; /* Adjust padding as needed */
+}
+.ingredient-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0; /* Adjust padding as needed */
+}
+
+.left-container {
+    display: flex;
+    align-items: center;
+}
+.left-container label {
+    margin-right: 8px;
+}
+.ingredient-price {
+    font-weight: bold;
+    text-align: right;
+}
+
+.strikethrough {
+    text-decoration: line-through;
+    color: grey;
+}
+
+
 
 footer {
     position: fixed;
@@ -52,12 +116,13 @@ footer {
     height: 40px;
     display: flex;
     justify-content: space-evenly;
+    /* Center the content horizontally */
     align-items: center;
     background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)),
         linear-gradient(to bottom, rgb(93, 141, 121), rgba(86, 182, 86, 0.527));
-    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     z-index: 1000;
-    /* Ensure footer is on top */
 }
 
 footer ion-icon {
@@ -77,23 +142,26 @@ a {
     color: rgb(255, 251, 0);
 }
 
-.difficulty-rating {
-    display: flex;
-    /* align-items: center; 
-    justify-content: center; */
-    margin-top: 20px;   /* Add space above the rating */
-    font-size: 18px;    /* Increase font size for better readability */
-    font-weight: bold; 
-}
 
-.difficulty-rating img {
-    width: 30px;        /* Make icons slightly larger */
-    height: 30px;
-    margin-right: 5px;
-    margin-bottom: -1px;
-}
 
 .missing {
     list-style: none;
-    padding-left: 0; 
+    padding-left: 0;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    #recipe-title {
+        font-size: 1.5em;
+    }
+
+    #header {
+        flex-direction: column;
+        height: auto;
+    }
+
+    button {
+        margin-top: 10px;
+    }
+
 }
