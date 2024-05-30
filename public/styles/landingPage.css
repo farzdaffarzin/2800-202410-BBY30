@@ -3,10 +3,10 @@ body {
     margin: 0;
     padding: 0;
     background-color: #83aa7083;
-    padding-top: 80px;
-    padding-bottom: 60px; /* Match the footer height */
+    /* padding-bottom: 60px; Match the footer height */
     min-height: calc(100vh - 100px); /* 100vh - header & footer heights */
-
+    display: flex;
+    flex-direction: column; /* Ensure body children are stacked vertically */
 }
 
 button {
@@ -52,16 +52,54 @@ background-color: rgb(82, 83, 78);
     max-width: 1200px;
     /* Limit the maximum width for better control */
 }
-#recipe-title {
-    font-size: 2em;
-    flex-grow: 1; /* Allow the title to take available space */
-    margin: 0; /* Remove default margin */
+.container {
+    flex: 1; /* Allow the container to take up available space */
+    padding-bottom: 60px; /* Prevent content from overlapping the footer */
+    padding-left: 15px;
+    padding-right:15px;
+    padding-top: 80px;
 }
 
-#recipe-image {
-    width: 100%;
-    height: auto;
+
+
+/* Shopping list elements */
+.strikethrough label {
+    text-decoration: line-through;
+    color: #777;
 }
+
+label {
+    margin-left: 10px;
+}
+
+.ingredient-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.left-container {
+    display: flex;
+    align-items: center;
+}
+
+.left-container label {
+    margin-left: 8px;
+}
+
+.ingredient-price {
+    margin-left: auto;
+    font-weight: bold;
+}
+
+.strikethrough {
+    text-decoration: line-through;
+    color: grey;
+}
+
+
+
 footer {
     position: fixed;
     left: 0;
@@ -113,5 +151,6 @@ a {
     button {
         margin-top: 10px;
     }
+
 }
 

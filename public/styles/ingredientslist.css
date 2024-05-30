@@ -18,11 +18,3 @@ li {
     margin-bottom: 10px;
 }
 
-.strikethrough label {
-    text-decoration: line-through;
-    color: #777;
-}
-
-label {
-    margin-left: 10px;
-}

@@ -11,7 +11,7 @@
 
     <header id="header">
         <div class="header-content">
-            <h2 id="recipe-title">
+            <h2 id="recipe-title" class="recipe-title">
                 <%= recipe.title %>
             </h2>
 
@@ -22,7 +22,16 @@
         </div>
     </header>
     <style>
+        #recipe-title {
+            font-size: calc(100vw / 20);
+            flex-grow: 1;
+            margin: 0;
+        }
 
+        #recipe-image {
+            width: 100%;
+            height: auto;
+        }
 
         .difficulty-rating {
             display: flex;
