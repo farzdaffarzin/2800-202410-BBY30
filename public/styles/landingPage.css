@@ -77,21 +77,7 @@ a {
     color: rgb(255, 251, 0);
 }
 
-.difficulty-rating {
-    display: flex;
-    /* align-items: center; 
-    justify-content: center; */
-    margin-top: 20px;   /* Add space above the rating */
-    font-size: 18px;    /* Increase font size for better readability */
-    font-weight: bold; 
-}
 
-.difficulty-rating img {
-    width: 30px;        /* Make icons slightly larger */
-    height: 30px;
-    margin-right: 5px;
-    margin-bottom: -1px;
-}
 
 .missing {
     list-style: none;

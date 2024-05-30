@@ -7,129 +7,74 @@
     <%- include('templates/header') %>
 
         <style>
-            body {
-            margin-top: 100px; 
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            }   
-
-            h2 {
-                font-size: 24px;
-                color: white; 
-            }
-
-            h3 {
-                font-size: 18px;
-                color: white; 
-            }
-
-            ul {
-                list-style: none;
-                padding: 0;
-            }
-
-            li {
-                margin-bottom: 10px;
-            }
-            /* Checkbox Styling*/
-            input[type="checkbox"] {
-                color: rgb(255, 251, 0); 
-            }
-
-            label {
-                font-weight: bold;
-            }
-
-            input[type="text"] {
-                /* Style for the "Add Missing Ingredients" input */
-                width: 200px;
-                padding: 5px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-            }
-
-            button {
-                /* Style for buttons */
-                background-color: rgb(93, 141, 121);
-                color: #fff;
-                border: none;
-                padding: 5px 10px;
-                border-radius: 4px;
-                cursor: pointer;
-
-            }
-
-            button:hover {
-        background-color: rgb(82, 83, 78);
-            }
-
             #recipeList,
             #recipeDetails {
                 margin-top: 20px;
                 font-size: 16px;
-                color: white; 
+                color: white;
             }
         </style>
 
 </head>
 
 <body>
-    <h2>Recipe Prompt</h2>
+    <div class="container">
+        <h2>Recipe Prompt</h2>
 
-    <h3>Ingredients in your Fridge:</h3>
-    <ul id="fridgeList">
-        <% fridgeData.forEach(item=> { %>
-            <li>
-                <input type="checkbox" id="<%= item.name %>" name="<%= item.name %>" value="<%= item.name %>">
-                <label for="<%= item.name %>">
-                    <%= item.name %> (<%= item.quantity %>
-                            <%= item.unit %>)
-                </label>
-            </li>
-            <% }); %>
-    </ul>
+        <h3>Ingredients in your Fridge:</h3>
+        <ul id="fridgeList">
+            <% fridgeData.forEach(item=> { %>
+                <li>
+                    <input type="checkbox" id="<%= item.name %>" name="<%= item.name %>" value="<%= item.name %>">
+                    <label for="<%= item.name %>">
+                        <%= item.name %> (<%= item.quantity %>
+                                <%= item.unit %>)
+                    </label>
+                </li>
+                <% }); %>
+        </ul>
 
-    <h3>Add Missing Ingredients:</h3>
-    <input type="text" id="addIngredient">
-    <button onclick="addIngredient()">Add</button>
-    <ul id="addedIngredients"></ul>
+        <h3>Add Missing Ingredients:</h3>
+        <input type="text" id="addIngredient">
+        <button onclick="addIngredient()">Add</button>
+        <ul id="addedIngredients"></ul>
 
-    <select name="cuisines" id="cuisineSelector">
-        <option value="any">Any</option>
-        <option value="african">African</option>
-        <option value="asian">Asian</option>
-        <option value="american">American</option>
-        <option value="british">British</option>
-        <option value="cajun">Cajun</option>
-        <option value="caribbean">Caribbean</option>
-        <option value="chinese">Chinese</option>
-        <option value="eastern european">Eastern European</option>
-        <option value="european">European</option>
-        <option value="french">French</option>
-        <option value="german">German</option>
-        <option value="greek">Greek</option>
-        <option value="indian">Indian</option>
-        <option value="irish">Irish</option>
-        <option value="italian">Italian</option>
-        <option value="japanese">Japanese</option>
-        <option value="jewish">Jewish</option>
-        <option value="korean">Korean</option>
-        <option value="latin american">Latin American</option>
-        <option value="mediterranean">Mediterranean</option>
-        <option value="mexican">Mexican</option>
-        <option value="middle eastern">Middle Eastern</option>
-        <option value="nordic">Nordic</option>
-        <option value="southern">Southern</option>
-        <option value="spanish">Spanish</option>
-        <option value="thai">Thai</option>
-        <option value="vietnamese">Vietnamese</option>
-    </select>
-    
-    <button onclick="generateRecipesFromPrompt()">Generate Recipes</button> 
+        <select name="cuisines" id="cuisineSelector">
+            <option value="any">Any</option>
+            <option value="african">African</option>
+            <option value="asian">Asian</option>
+            <option value="american">American</option>
+            <option value="british">British</option>
+            <option value="cajun">Cajun</option>
+            <option value="caribbean">Caribbean</option>
+            <option value="chinese">Chinese</option>
+            <option value="eastern european">Eastern European</option>
+            <option value="european">European</option>
+            <option value="french">French</option>
+            <option value="german">German</option>
+            <option value="greek">Greek</option>
+            <option value="indian">Indian</option>
+            <option value="irish">Irish</option>
+            <option value="italian">Italian</option>
+            <option value="japanese">Japanese</option>
+            <option value="jewish">Jewish</option>
+            <option value="korean">Korean</option>
+            <option value="latin american">Latin American</option>
+            <option value="mediterranean">Mediterranean</option>
+            <option value="mexican">Mexican</option>
+            <option value="middle eastern">Middle Eastern</option>
+            <option value="nordic">Nordic</option>
+            <option value="southern">Southern</option>
+            <option value="spanish">Spanish</option>
+            <option value="thai">Thai</option>
+            <option value="vietnamese">Vietnamese</option>
+        </select>
 
-    <ul id="recipeList"></ul>
-    <div id="recipeDetails"></div>
+        <button onclick="generateRecipesFromPrompt()">Generate Recipes</button>
+
+        <ul id="recipeList"></ul>
+        <div id="recipeDetails"></div>
+    </div>
     <%- include('templates/footer') %>
 </body>
 

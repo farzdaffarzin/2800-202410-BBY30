@@ -18,40 +18,63 @@
                 <% } else { %>Save to Favorites<% } %>
         </button>
     </header>
+    <style>
+        .difficulty-rating {
+            display: flex;
+            /* align-items: center; 
+    justify-content: center; */
+            margin-top: 20px;
+            /* Add space above the rating */
+            font-size: 18px;
+            /* Increase font size for better readability */
+            font-weight: bold;
+        }
+
+        .difficulty-rating img {
+            width: 30px;
+            /* Make icons slightly larger */
+            height: 30px;
+            margin-right: 5px;
+            margin-bottom: -1px;
+        }
+    </style>
 </head>
 
 <body>
-    <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
-    <div class="difficulty-rating">
-        Difficulty:
-        <% for (let i=0; i < difficulty; i++) { %>
-            <img src="/images/chefhat.png" alt="Chef Hat Icon" />
-            <% } %>
-                <span class="rating-label"> (<%= difficulty %> / 3)</span>
+    <div class="container">
+        <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
+        <div class="difficulty-rating">
+            Difficulty:
+            <% for (let i=0; i < difficulty; i++) { %>
+                <img src="/images/chefhat.png" alt="Chef Hat Icon" />
+                <% } %>
+                    <span class="rating-label"> (<%= difficulty %> / 3)</span>
+        </div>
+
+
+        <h2>Ingredients:</h2>
+        <ul>
+            <% recipe.extendedIngredients.forEach(ing=> { %>
+                <li>
+                    <%= ing.original %>
+                </li>
+                <% }); %>
+        </ul>
+
+        <h2>Missing Ingredients:</h2>
+        <ul id="missingIngredientsList">
+            <% missingIngredients.forEach(element=> { %>
+                <li class="missing" data-id="<%= element.id %>" data-name="<%= element.name %>"
+                    data-amount="<%= element.amount %>" data-unit="<%= element.unit %>">
+                    <button class="add-button">Add</button>
+                    <%= element.name %>
+                </li>
+                <%});%>
+        </ul>
+
+        <h2>Instructions:</h2>
+        <div><%- recipe.instructions %></div>
     </div>
-
-
-    <h2>Ingredients:</h2>
-    <ul>
-        <% recipe.extendedIngredients.forEach(ing=> { %>
-            <li>
-                <%= ing.original %>
-            </li>
-            <% }); %>
-    </ul>
-
-    <h2>Missing Ingredients:</h2>
-    <ul id="missingIngredientsList">
-        <% missingIngredients.forEach(element => { %>
-            <li class="missing" data-id="<%= element.id %>" data-name="<%= element.name %>" data-amount="<%= element.amount %>" data-unit="<%= element.unit %>">
-                <button class="add-button">Add</button> <%= element.name %>
-            </li>
-            <%});%>
-    </ul>
-
-    <h2>Instructions:</h2>
-    <div><%- recipe.instructions %></div>
-
     <%- include('templates/footer') %>
         <script src="/recipeDisplay.js"></script>
         <script>
