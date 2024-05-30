@@ -26,7 +26,7 @@ async function getRecipesByIngredients(ingredients, cuisine, axiosInstance = axi
     try {
       let url;
   
-      if (ingredients.length > 0) {
+      if (ingredients.length > 1) {
         // Use findByIngredients for multiple ingredients
         if (cuisine === "any" || cuisine == null) {
           url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${SPOONACULAR_API_KEY}&ingredients=${ingredients.join(',')}&ranking=2`;
@@ -35,7 +35,8 @@ async function getRecipesByIngredients(ingredients, cuisine, axiosInstance = axi
         }
       } else {
         // Use complexSearch for single ingredient with sorting by popularity
-        url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=${ingredients[0]}&sort=popularity&ranking=2`;
+        let ingredientEncoded = encodeURIComponent(ingredients[0]);
+        url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=${ingredientEncoded}&sort=popularity&ranking=2`;
       }
   
       const response = await axiosInstance.get(url);
