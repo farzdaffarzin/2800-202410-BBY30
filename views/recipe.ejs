@@ -1,62 +1,97 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title><%= recipe.title %></title>
-    <%- include('templates/header') %> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/landingPage.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+    <header id="header">
+        <div class="header-content">
+            <h2 id="recipe-title" class="recipe-title">
+                <%= recipe.title %>
+            </h2>
+
+            <button type="button" id="saveButton-<%= recipe.id %>">
+                <% if (recipe.isSaved) { %>Remove from Favorites
+                    <% } else { %>Save to Favorites<% } %>
+            </button>
+        </div>
+    </header>
     <style>
-        /* Basic styling for the difficulty rating */
+        #recipe-title {
+            font-size: calc(100vw / 20);
+            flex-grow: 1;
+            margin: 0;
+        }
+
+        #recipe-image {
+            width: 100%;
+            height: auto;
+        }
+
         .difficulty-rating {
-            display: flex; /* Arrange icons horizontally */
+            display: flex;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
         }
 
         .difficulty-rating img {
-            width: 24px; /* Adjust the size as needed */
-            height: 24px;
-            margin-right: 5px; /* Add some space between icons */
+            width: 30px;
+            height: 30px;
+            margin-right: 5px;
+            margin-bottom: -1px;
         }
     </style>
 </head>
 
 <body>
-    <h1><%= recipe.title %></h1>
-    <div class="difficulty-rating">
-        <% for (let i = 0; i < difficulty; i++) { %>
-            <img src="/images/chefhat.png" alt="Chef Hat Icon" />
-        <% } %>
+    <div class="container">
+        <img id="recipe-image" src="<%= recipe.image %>" alt="<%= recipe.title %>">
+        <div class="difficulty-rating">
+            Difficulty:
+            <% for (let i=0; i < difficulty; i++) { %>
+                <img src="/images/chefhat.png" alt="Chef Hat Icon" />
+                <% } %>
+                    <span class="rating-label"> (<%= difficulty %> / 3)</span>
+        </div>
+
+        <h2>Ingredients:</h2>
+        <ul>
+            <% recipe.extendedIngredients.forEach(ing=> { %>
+                <li>
+                    <%= ing.original %>
+                </li>
+                <% }); %>
+        </ul>
+
+        <h2>Missing Ingredients:</h2>
+        <ul id="missingIngredientsList">
+            <% missingIngredients.forEach(element=> { %>
+                <li class="missing" data-id="<%= element.id %>" data-name="<%= element.name %>"
+                    data-amount="<%= element.amount %>" data-unit="<%= element.unit %>">
+                    <button class="add-button">Add</button>
+                    <%= element.name %>
+                </li>
+                <% }); %>
+        </ul>
+
+        <h2>Instructions:</h2>
+        <div><%- recipe.instructions %></div>
     </div>
-    <img src="<%= recipe.image %>" alt="<%= recipe.title %>">
+    <%- include('templates/footer') %>
 
-    <button type="button" id="saveButton-<%= recipe.id %>">
-        <% if (recipe.isSaved) { %>Remove from Favorites
-        <% } else { %>Save to Favorites<% } %>
-    </button>
-    
-    <h2>Ingredients:</h2>
-    <ul>
-        <% recipe.extendedIngredients.forEach(ing => { %>
-            <li><%= ing.original %></li>
-        <% }); %>
-    </ul>
-
-    <h2>Missing Ingredients</h2>
-    <ul id="missingIngredientsList">
-        <% missingIngredients.forEach(element => { %>
-            <li data-id="<%= element.id %>" data-name="<%= element.name %>" data-amount="<%= element.amount %>" data-unit="<%= element.unit %>">
-                <%= element.amount %> <%= element.unit %> <%= element.name %> 
-            </li>
-        <%});%>
-    </ul>
-    
-    <h2>Instructions:</h2>
-    <div><%- recipe.instructions %></div> 
-
-    <%- include('templates/footer') %> 
-    <script src="/recipeDisplay.js"></script> 
-    <script>
-        document.getElementById('saveButton-<%= recipe.id %>').addEventListener('click', () => {
-            toggleFavorite('<%= recipe.id %>');
-        });
-    </script>
-    <script src="../addToShoppingList.js"></script>
+        <script src="/recipeDisplay.js"></script>
+        <script>
+            document.getElementById('saveButton-<%= recipe.id %>').addEventListener('click', () => {
+                toggleFavorite('<%= recipe.id %>');
+            });
+        </script>
+        <script src="../addToShoppingList.js"></script>
 </body>
+
 </html>

@@ -35,7 +35,8 @@ async function getRecipesByIngredients(ingredients, cuisine, axiosInstance = axi
         }
       } else {
         // Use complexSearch for single ingredient with sorting by popularity
-        url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=${ingredients[0]}&sort=popularity&ranking=2`;
+        let ingredientEncoded = encodeURIComponent(ingredients[0]);
+        url = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=${ingredientEncoded}&sort=popularity&ranking=2`;
       }
   
       const response = await axiosInstance.get(url);
@@ -115,10 +116,10 @@ async function getRecipesByIngredients(ingredients, cuisine, axiosInstance = axi
 function calculateDifficulty(steps, ingredients, cookTime) {
     let difficulty = 1; // Start with base difficulty of 1 (easy)
 
-    if (steps > 10) {
+    if (steps > 5) {
         difficulty++; // Increase difficulty if steps exceed 10
     }
-    if (ingredients > 8) {
+    if (ingredients > 5) {
         difficulty++; // Increase difficulty if ingredients exceed 8
     }
     if (cookTime > 45) {
@@ -136,20 +137,20 @@ async function getMissingIngredientsForRecipe(recipeId, username, fridgeData, sh
         return ingredients.filter(ingredient => {
             const existsInFridge = fridgeData.some(
                 fridgeItem =>
-                    fridgeItem.name.toLowerCase() === ingredient.name.toLowerCase() &&
-                    fridgeItem.amount >= ingredient.amount &&
-                    fridgeItem.unit === ingredient.unit // Consider unit as well
+                    fridgeItem.id === ingredient.id //&&
+                    // fridgeItem.amount >= ingredient.amount &&
+                    // fridgeItem.unit === ingredient.unit // Consider unit as well
             );
             const existsInShoppingList = shoppingListData.some(
                 shoppingListItem =>
-                    shoppingListItem.name.toLowerCase() === ingredient.name.toLowerCase() &&
-                    shoppingListItem.amount >= ingredient.amount &&
-                    shoppingListItem.unit === ingredient.unit // Consider unit as well
+                    shoppingListItem.id === ingredient.id //&&
+                    // shoppingListItem.amount >= ingredient.amount &&
+                    // shoppingListItem.unit === ingredient.unit // Consider unit as well
             );
             return !existsInFridge && !existsInShoppingList;
         }).map(ingredient => ({
             id: ingredient.id,
-            name: ingredient.name,
+            name: ingredient.original,
             amount: ingredient.amount,
             unit: ingredient.unit,
         })); // Return the full ingredient object (including amount and unit)

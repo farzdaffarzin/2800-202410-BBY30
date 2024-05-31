@@ -76,24 +76,24 @@ connectToDatabase().then(() => {
         }
     });
 
-    // Log MongoStore events
-    mongoStore.on('create', (session) => {
-        console.log('Session created:', session);
-    });
+    // debugging output for database
+    // mongoStore.on('create', (session) => {
+    //     console.log('Session created:', session);
+    // });
 
-    mongoStore.on('update', (session) => {
-        console.log('Session updated:', session);
-    });
+    // mongoStore.on('update', (session) => {
+    //     console.log('Session updated:', session);
+    // });
 
-    mongoStore.on('destroy', (session) => {
-        console.log('Session destroyed:', session);
-    });
+    // mongoStore.on('destroy', (session) => {
+    //     console.log('Session destroyed:', session);
+    // });
 
-    mongoStore.on('error', (error) => {
-        console.error('MongoStore error:', error);
-    });
+    // mongoStore.on('error', (error) => {
+    //     console.error('MongoStore error:', error);
+    // });
 
-    console.log('mongoStore initialized:', mongoStore);
+    // console.log('mongoStore initialized:', mongoStore);
 
     // Use session middleware
     app.use(session({
@@ -140,7 +140,6 @@ connectToDatabase().then(() => {
             // Fetch the recipe details from Spoonacular
             const response = await axios.get(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}&includeNutrition=false`);
             const recipeDetails = response.data;
-            console.log("Recipe Details:", recipeDetails);
 
             // Fetch user data
             let username;
@@ -172,7 +171,10 @@ connectToDatabase().then(() => {
             );
 
             // Calculate difficulty rating 
-            const steps = recipeDetails.analyzedInstructions?.[0]?.steps?.length || 0;
+            const steps = recipeDetails.analyzedInstructions.reduce((totalSteps, instruction) => {
+                return totalSteps + (instruction.steps ? instruction.steps.length : 0);
+              }, 0); 
+
             const difficulty = calculateDifficulty(
                 steps,
                 recipeDetails.extendedIngredients.length,
@@ -276,6 +278,32 @@ connectToDatabase().then(() => {
         }
     });
 
+    app.post('/delete-ingredients', async (req, res) => {
+        const ids = req.body.ids;
+        const idsAsIntegers = ids.map(id => parseInt(id, 10));
+        console.log(ids);
+        const username = req.session.username;
+        const user = await userCollection.findOne({ username: username });
+        console.log('bbbbb');
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        console.log('ccccc');
+        console.log(user)
+        try {
+            const result = await userCollection.findOneAndUpdate(
+                { username: username }, 
+                { $pull: { shoppingList: { id: { $in: idsAsIntegers } } } }, 
+                { new: true } 
+            );
+            console.log(result);
+            console.log(await userCollection.findOne({username: username}));
+            res.json({ success: true });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, error: 'Internal server error' });
+        }
+    });
 
     // Route to handle saving a recipe
     app.post('/save-recipe', async (req, res) => {
@@ -642,37 +670,69 @@ connectToDatabase().then(() => {
     });
 
 
-    // Route for the home page
     app.get("/Home", async (req, res) => {
         if (!req.session.authenticated) {
             res.redirect('/'); // Redirect to index page if not authenticated
             return;
         } else {
             try {
-                console.log(req.session.userId);
                 const userId = req.session.userId;
-
+    
+                console.log("User ID:", userId);
+    
                 // Fetch the user's savedRecipes array directly
-                const user = await userCollection.findOne({ _id: userId });
-                const savedRecipeIds = user?.savedRecipes || [];
-
+                const user = await userCollection.findOne({ _id: new ObjectId(userId) }); // Use 'new' keyword
+                console.log("User found:", user);
+    
+                if (!user) {
+                    console.error("User not found.");
+                    return res.render('landingPage', { username: req.session.username, recipes: [] });
+                }
+    
+                const savedRecipeIds = user.savedRecipes || [];
+                console.log("Saved Recipe IDs:", savedRecipeIds);
+    
+                if (savedRecipeIds.length === 0) {
+                    return res.render('landingPage', { username: req.session.username, recipes: [] });
+                }
+    
                 // Fetch detailed information for each saved recipe from Spoonacular API
                 const recipeDetailsPromises = savedRecipeIds.map(recipeId => {
                     return axios.get(`https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_API_KEY}&includeNutrition=false`);
                 });
                 const recipeDetailsResponses = await Promise.all(recipeDetailsPromises);
-
+    
                 // Extract recipe details
                 const recipeDetails = recipeDetailsResponses.map(response => response.data);
-
-                res.render('landingPage', { username: req.session.username, recipes: recipeDetails });
+                console.log("Recipe Details:", recipeDetails);
+    
+                // Calculate difficulty for each recipe
+                const recipesWithDifficulty = recipeDetails.map(recipe => {
+                    const steps = recipe.analyzedInstructions.reduce((totalSteps, instruction) => {
+                        return totalSteps + (instruction.steps ? instruction.steps.length : 0);
+                    }, 0);
+    
+                    const difficulty = calculateDifficulty(
+                        steps,
+                        recipe.extendedIngredients.length,
+                        recipe.readyInMinutes
+                    );
+    
+                    return {
+                        ...recipe,
+                        difficulty
+                    };
+                });
+    
+                console.log("Recipes with Difficulty:", recipesWithDifficulty);
+    
+                res.render('landingPage', { username: req.session.username, recipes: recipesWithDifficulty });
             } catch (error) {
                 console.error("Error fetching saved recipes:", error);
                 res.status(500).send("Internal Server Error");
             }
         }
-    });
-
+    }); 
     app.get('/location', (req, res) => {
         res.render('location');
     });

@@ -1,10 +1,4 @@
-/* General body styling */
-body {
-    background-color: #bfd3b5; /* Changed to match the new background color */
-    font-family: 'Verdana', sans-serif; 
-    color: #353535;
-    margin-top: 70px; /* Adjust this if needed based on your header height */
-}
+
 
 /* Specific element styling */
 .ui-w-80 {
@@ -153,4 +147,10 @@ input[type="email"], input[type="password"], input[type="text"], select, textare
 
 .forgot-password-link:hover {
     text-decoration: underline; 
+}
+
+footer {
+
+    height: 60px;
+
 }
