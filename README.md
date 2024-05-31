@@ -17,8 +17,20 @@ Our program uses `Node.js` to transfer users between pages while also injecting 
 the program, you must first enter "npm i" to install all requires. Then finally enter "node index.js" into the console
 to finish setting up the project. 
 
-## AI Utilization
-No AI tools such as ChatGPT or Copilot was used in our application.
+## Features
+### Login & Sign-Up
+When first directed to the application, users will be able to create an account that can be used to store data next them they sign in. Furthermore, users are also able to
+click "Forgot Password" if they cannot recall their password. A link will be sent to their email with a new suggested password. 
+
+### Recipe Generation
+Users will be able to input the ingredients they have in their fridge to create a list of dishes they are able to create. From there, users can filter the dishes by difficulty 
+and dish nationality (asian, middle easter, nordic, etc...)
+
+### Price Check 
+Another intuitive feature that we have implmeented is the ability to check how much each missing ingredient costs to buy from Walmart using the Walmart API.
+
+### Shopping List
+When users are mssing ingredients for their dish, they have the ability to add those missing items into a shopping list with the click of a button. From there, the user can quickly navigate to the "Shopping List" page to quickly view items they need to purchase. Users can also cross out items in the list once they have been purchased. 
 
 ## References & Credits
 ### MondoDB Database
@@ -30,7 +42,18 @@ Spoonacular API Link: https://spoonacular.com/food-api
 ### Walmart API
 Walmart API Link: https://developer.walmart.com
 
+## File Listing
+### Public Folder
+Our public folder is used to store images, css styles, and javascript files
 
+### Views Folder
+The views folder is used to hold all ejs files that are used to be injected into the website. 
+
+### Other
+All other files are mainly JS files that act as a connector with the front end logic and the backend logic
+
+## AI Utilization
+No AI tools such as ChatGPT or Copilot was used in our application.
 
 ## Team Info
 Team Name: BBY-30
